@@ -1,0 +1,763 @@
+# ecotox_app.py
+# Executar: streamlit run ecotox_app.py
+# Dependências: pip install streamlit matplotlib numpy scipy pandas
+
+import streamlit as st
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+from scipy import stats
+from scipy.special import ndtr, ndtri   # pnorm / qnorm precisos
+from io import BytesIO
+
+# ═══════════════════════════════════════════════════════════════
+# CONFIGURAÇÃO DA PÁGINA
+# ═══════════════════════════════════════════════════════════════
+st.set_page_config(
+    page_title="EcotoxLab",
+    page_icon="⚗",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+# CSS personalizado
+st.markdown("""
+<style>
+    /* Fundo e texto */
+    .stApp { background-color: #0a0e14; color: #cdd9e5; }
+    section[data-testid="stSidebar"] { background-color: #0d1117; border-right: 1px solid #2d333b; }
+
+    /* Inputs */
+    .stTextInput input, .stNumberInput input, .stSelectbox select {
+        background-color: #13191f !important;
+        border: 1px solid #2d333b !important;
+        color: #cdd9e5 !important;
+        border-radius: 6px !important;
+    }
+
+    /* Botões */
+    .stButton > button {
+        background: linear-gradient(135deg, #1a7f64, #2da677);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        width: 100%;
+    }
+    .stButton > button:hover { filter: brightness(1.1); }
+
+    /* Métricas */
+    [data-testid="stMetric"] {
+        background-color: #13191f;
+        border: 1px solid #2d333b;
+        border-radius: 10px;
+        padding: 14px 16px;
+    }
+    [data-testid="stMetricValue"] { color: #539bf5 !important; font-size: 1.4rem !important; }
+    [data-testid="stMetricLabel"] { color: #768390 !important; font-size: 0.75rem !important; }
+
+    /* Cabeçalho */
+    .main-header {
+        padding: 12px 0 16px 0;
+        border-bottom: 1px solid #2d333b;
+        margin-bottom: 20px;
+    }
+    .badge {
+        display: inline-block;
+        background: #1a3a2e;
+        color: #2da677;
+        padding: 2px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-right: 6px;
+    }
+    .badge-blue {
+        background: #1a2a3a;
+        color: #539bf5;
+    }
+    /* Tabs */
+    .stTabs [data-baseweb="tab-list"] { background-color: #0d1117; border-bottom: 1px solid #2d333b; }
+    .stTabs [data-baseweb="tab"] { color: #768390; }
+    .stTabs [aria-selected="true"] { color: #2da677 !important; border-bottom: 2px solid #2da677 !important; }
+
+    /* Expander */
+    .streamlit-expanderHeader { background-color: #13191f !important; color: #cdd9e5 !important; }
+
+    /* Dataframe */
+    .stDataFrame { border: 1px solid #2d333b; border-radius: 8px; }
+
+    /* Info/warning boxes */
+    .info-box {
+        background: #0a0e14;
+        border: 1px solid #2d333b;
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: 12px;
+        color: #768390;
+        line-height: 1.6;
+    }
+    .warn-box {
+        background: #2d1217;
+        border: 1px solid #e5534b60;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 12px;
+        color: #e5534b;
+    }
+    h1, h2, h3 { color: #cdd9e5 !important; }
+    hr { border-color: #2d333b; }
+</style>
+""", unsafe_allow_html=True)
+
+
+# ═══════════════════════════════════════════════════════════════
+# MATEMÁTICA — mesma lógica do JSX original
+# ═══════════════════════════════════════════════════════════════
+
+def abbott(p, ctrl):
+    """Correção de Abbott para mortalidade do controle."""
+    if ctrl >= 1:
+        return p
+    return float(np.clip((p - ctrl) / (1 - ctrl), 0, 1))
+
+
+def chi_sq_pval(chi2, df):
+    """p-valor do qui-quadrado de Pearson."""
+    if df <= 0 or np.isnan(chi2):
+        return np.nan
+    return float(1 - stats.chi2.cdf(chi2, df))
+
+
+def calc_spearman_karber(doses, deaths, totals):
+    """
+    Spearman-Kärber aparado (Wheeler et al. 2006).
+    Variância: Thompson (1947).
+    """
+    data = sorted(
+        [(d, deaths[i] / totals[i], totals[i], deaths[i])
+         for i, d in enumerate(doses) if d > 0],
+        key=lambda x: x[0]
+    )
+    if len(data) < 2:
+        return None
+
+    ld = [np.log10(d) for d, *_ in data]
+    pr = [p for _, p, *_ in data]
+    ns = [n for _, _, n, _ in data]
+    ks = [k for _, _, _, k in data]
+
+    # Área sob a curva (trapézio em escala log)
+    area = sum(
+        (ld[i] - ld[i-1]) * (pr[i] + pr[i-1]) / 2
+        for i in range(1, len(ld))
+    )
+    log_cl = ld[-1] - area
+
+    # Variância (Thompson 1947)
+    v = sum(
+        (ld[i] - ld[i-1])**2 * ((pr[i] + pr[i-1]) / 2) * (1 - (pr[i] + pr[i-1]) / 2)
+        / max(ns[i] - 1, 1)
+        for i in range(1, len(ld))
+    )
+    se = np.sqrt(v)
+    factor = 10 ** (1.96 * se)
+
+    # χ² de Pearson (GOF)
+    chi2 = sum(
+        (ks[i] - ns[i] * pr[i])**2 / max(ns[i] * pr[i] * (1 - pr[i]), 1e-6)
+        for i in range(len(data))
+    )
+    df = max(1, len(data) - 2)
+    cl = 10 ** log_cl
+
+    return dict(
+        cl=cl, lcl=cl / factor, ucl=cl * factor, log_cl=log_cl,
+        slope=None, intercept=None,
+        chi2=round(chi2, 3), pgof=round(chi_sq_pval(chi2, df), 4),
+        z_value=None, variance=None,
+    )
+
+
+def calc_glm(doses, deaths, totals, link="probit"):
+    """
+    GLM binomial via IRLS — equivalente a LC_probit / LC_logit / LT_probit / LT_logit
+    do pacote R {ecotox} (Hlina et al. 2021).
+    Limites fiduciais via delta method (Finney 1971).
+    """
+    # Dados em log10
+    data = [
+        (np.log10(max(d, 1e-10)), deaths[i] / totals[i], totals[i], deaths[i])
+        for i, d in enumerate(doses) if d > 0
+    ]
+    data = [(x, p, n, k) for x, p, n, k in data if np.isfinite(x)]
+    if len(data) < 2:
+        return None
+
+    # Funções de ligação
+    if link == "probit":
+        ginv   = lambda eta: float(ndtr(eta))
+        gprime = lambda mu: float(np.exp(-0.5 * ndtri(mu)**2) / np.sqrt(2 * np.pi))
+        fn     = lambda p: float(ndtri(p))
+    else:  # logit
+        ginv   = lambda eta: 1 / (1 + np.exp(-eta))
+        gprime = lambda mu: mu * (1 - mu)
+        fn     = lambda p: np.log(p / (1 - p))
+
+    # Semente OLS com pontos interiores (0 < p < 1)
+    pts = [(x, p, n, k) for x, p, n, k in data if 0 < p < 1]
+    if len(pts) < 2:
+        return None
+
+    xs = [x for x, *_ in pts]
+    ys = [fn(max(1e-6, min(1-1e-6, p))) for _, p, *_ in pts]
+    mx, my = np.mean(xs), np.mean(ys)
+    ssxy = sum((xs[i]-mx)*(ys[i]-my) for i in range(len(xs)))
+    ssxx = sum((v-mx)**2 for v in xs)
+    b1 = ssxy / ssxx if ssxx > 1e-12 else 1.0
+    b0 = my - b1 * mx
+
+    # IRLS (40 iterações)
+    for _ in range(40):
+        sW = sWX = sXWX = sWZ = sXWZ = 0.0
+        for x, p, n, k in data:
+            eta = b0 + b1 * x
+            mu  = max(1e-7, min(1-1e-7, ginv(eta)))
+            gp  = max(1e-10, gprime(mu))
+            w   = n * gp**2 / (mu * (1 - mu))
+            z   = eta + (p - mu) / gp
+            sW += w; sWX += w*x; sXWX += w*x*x; sWZ += w*z; sXWZ += w*x*z
+        det = sW*sXWX - sWX**2
+        if abs(det) < 1e-14:
+            break
+        nb0 = (sXWX*sWZ - sWX*sXWZ) / det
+        nb1 = (sW*sXWZ  - sWX*sWZ)  / det
+        conv = abs(nb0-b0) + abs(nb1-b1)
+        b0, b1 = nb0, nb1
+        if conv < 1e-9:
+            break
+
+    # CL50: g(0.5) = 0 para probit e logit → log10(CL50) = -b0/b1
+    if abs(b1) < 1e-12:
+        return None
+    log_cl = -b0 / b1
+    cl = 10 ** log_cl
+
+    # Variância via delta method (Finney 1971)
+    sW = sWX = sXWX = 0.0
+    for x, p, n, k in data:
+        eta = b0 + b1 * x
+        mu  = max(1e-7, min(1-1e-7, ginv(eta)))
+        gp  = max(1e-10, gprime(mu))
+        w   = n * gp**2 / (mu * (1 - mu))
+        sW += w; sWX += w*x; sXWX += w*x*x
+    det = sW*sXWX - sWX**2
+    if abs(det) < 1e-14:
+        return None
+
+    var_b0   = max(0, sXWX / det)
+    var_b1   = max(0, sW   / det)
+    cov_b    = -sWX / det
+    var_logcl = (var_b0 + 2*log_cl*cov_b + log_cl**2*var_b1) / b1**2
+    se_logcl  = np.sqrt(max(0, var_logcl))
+    factor    = 10 ** (1.96 * se_logcl)
+
+    se_b1  = np.sqrt(var_b1)
+    z_val  = round(b1 / se_b1, 3) if se_b1 > 1e-10 else None
+
+    # χ² Pearson (GOF)
+    chi2 = sum(
+        (k - n*max(1e-7, min(1-1e-7, ginv(b0+b1*x))))**2
+        / max(n * max(1e-7, min(1-1e-7, ginv(b0+b1*x))) * (1-max(1e-7, min(1-1e-7, ginv(b0+b1*x)))), 1e-6)
+        for x, p, n, k in data
+    )
+    df = max(1, len(data) - 2)
+
+    return dict(
+        cl=cl, lcl=cl/factor, ucl=cl*factor, log_cl=log_cl,
+        slope=round(b1, 4), intercept=round(b0, 4),
+        chi2=round(chi2, 3), pgof=round(chi_sq_pval(chi2, df), 4),
+        z_value=z_val, variance=round(var_logcl, 6),
+        _b0=b0, _b1=b1, _link=link,
+    )
+
+
+def predict_curve(x_vals, res, link="logit"):
+    """Gera pontos da curva ajustada para plotagem."""
+    y = []
+    for x in x_vals:
+        logx = np.log10(max(x, 1e-10))
+        if res.get("_b0") is not None:
+            eta = res["_b0"] + res["_b1"] * logx
+            v = float(ndtr(eta)) if link == "probit" else 1/(1+np.exp(-eta))
+        else:
+            v = 1 / (1 + (x / res["cl"])**(-4.5))
+        y.append(v * 100)
+    return np.array(y)
+
+
+def predict_from_cl(x_vals, cl, link="logit"):
+    """Curva deslocada para CL dado (usado nas bandas de IC)."""
+    b1 = 4.5
+    b0 = -b1 * (np.log10(cl) if cl > 0 else 0)
+    y = []
+    for x in x_vals:
+        logx = np.log10(max(x, 1e-10))
+        eta = b0 + b1 * logx
+        v = float(ndtr(eta)) if link == "probit" else 1/(1+np.exp(-eta))
+        y.append(v * 100)
+    return np.array(y)
+
+
+# ═══════════════════════════════════════════════════════════════
+# CONSTANTES
+# ═══════════════════════════════════════════════════════════════
+UNITS_CONC = ["µg/L","µg/g","µg/mg","µg/kg","mg/L","mg/g","mg/kg","ng/L","ng/g"]
+UNITS_TIME = ["h","min","dias","semanas"]
+
+METHODS = {
+    "lc_probit": dict(label="LC_probit()",  group="Concentração Letal", link="probit", x_is_time=False, cl_label="CL50"),
+    "lc_logit":  dict(label="LC_logit()",   group="Concentração Letal", link="logit",  x_is_time=False, cl_label="CL50"),
+    "lt_probit": dict(label="LT_probit()",  group="Tempo Letal",        link="probit", x_is_time=True,  cl_label="TL50"),
+    "lt_logit":  dict(label="LT_logit()",   group="Tempo Letal",        link="logit",  x_is_time=True,  cl_label="TL50"),
+    "spearman":  dict(label="Spearman-Kärber", group="Não-paramétrico", link=None,     x_is_time=False, cl_label="CL50"),
+}
+
+METHOD_NOTES = {
+    "lc_probit": "LC_probit(): GLM binomial com ligação probit (Finney 1971). Limites fiduciais via delta method. Equivalente direto ao LC_probit() do pacote R {ecotox} (Hlina et al. 2021).",
+    "lc_logit":  "LC_logit(): GLM binomial com ligação logit. Alternativa ao probit, mais robusta nos extremos da curva. Equivalente ao LC_logit() do {ecotox}.",
+    "lt_probit": "LT_probit(): Mesmo algoritmo do LC_probit, mas com tempo de exposição como variável independente. Equivalente ao LT_probit() do {ecotox}.",
+    "lt_logit":  "LT_logit(): GLM logit com tempo de exposição como variável independente. Equivalente ao LT_logit() do {ecotox}.",
+    "spearman":  "Spearman-Kärber aparado (Wheeler et al. 2006): método não-paramétrico. Variância por Thompson (1947). Correção de Abbott aplicada à mortalidade do controle.",
+}
+
+
+# ═══════════════════════════════════════════════════════════════
+# GRÁFICO
+# ═══════════════════════════════════════════════════════════════
+def make_chart(res, obs_x, obs_y, x_label, cl_label, substance, method_id, link):
+    """Gera figura matplotlib com curva + IC + pontos observados."""
+    fig, ax = plt.subplots(figsize=(9, 5))
+    fig.patch.set_facecolor("#0a0e14")
+    ax.set_facecolor("#0a0e14")
+
+    # Eixo x suave
+    xmin = max(min(obs_x) * 0.75, 1e-4)
+    xmax = max(obs_x) * 1.30
+    xs   = np.linspace(xmin, xmax, 200)
+
+    # Curvas
+    y_curve = predict_curve(xs, res, link or "logit")
+    y_lower = predict_from_cl(xs, res["lcl"], link or "logit")
+    y_upper = predict_from_cl(xs, res["ucl"], link or "logit")
+
+    # Banda de IC preenchida
+    ax.fill_between(xs, y_lower, y_upper, color="#2da677", alpha=0.12, label="_nolegend_")
+    ax.plot(xs, y_upper, color="#2da677", linewidth=1.2, linestyle="--", label="IC 95% (Sup/Inf)")
+    ax.plot(xs, y_lower, color="#2da677", linewidth=1.2, linestyle="--", label="_nolegend_")
+    ax.plot(xs, y_curve, color="#539bf5", linewidth=2.5, label=f"Curva {cl_label}")
+
+    # Pontos observados
+    ax.scatter(obs_x, obs_y, color="#e3b341", s=60, zorder=5, label="Dados observados", edgecolors="#0a0e14", linewidth=0.5)
+
+    # Linhas de referência
+    ax.axhline(50, color="#2d333b", linewidth=0.8, linestyle=":")
+    ax.axvline(res["cl"],  color="#539bf5", linewidth=1.2, linestyle="--", alpha=0.8)
+    ax.axvline(res["lcl"], color="#2da677", linewidth=0.8, linestyle=":",  alpha=0.6)
+    ax.axvline(res["ucl"], color="#2da677", linewidth=0.8, linestyle=":",  alpha=0.6)
+
+    # Anotação CL50
+    ax.text(
+        res["cl"], 52,
+        f" {cl_label}={res['cl']:.4f}",
+        color="#539bf5", fontsize=8, va="bottom"
+    )
+
+    # Estética
+    ax.set_xlabel(x_label, color="#768390", fontsize=10)
+    ax.set_ylabel("Mortalidade (%)", color="#768390", fontsize=10)
+    ax.set_title(f"{substance}  —  {METHODS[method_id]['label']}", color="#cdd9e5", fontsize=11, pad=10)
+    ax.set_ylim(-5, 108)
+    ax.set_yticks(range(0, 110, 10))
+    ax.tick_params(colors="#768390", labelsize=9)
+    for spine in ax.spines.values():
+        spine.set_color("#2d333b")
+    ax.grid(True, color="#2d333b", linewidth=0.5, linestyle="--", alpha=0.5)
+
+    legend = ax.legend(
+        facecolor="#13191f", edgecolor="#2d333b",
+        labelcolor="#cdd9e5", fontsize=9, loc="upper left"
+    )
+
+    # Marcadores LI / LS no eixo X
+    ax.annotate("LI", xy=(res["lcl"], 0), xytext=(res["lcl"], -4),
+                color="#2da677", fontsize=8, ha="center", va="top")
+    ax.annotate("LS", xy=(res["ucl"], 0), xytext=(res["ucl"], -4),
+                color="#2da677", fontsize=8, ha="center", va="top")
+
+    fig.tight_layout()
+    return fig
+
+
+# ═══════════════════════════════════════════════════════════════
+# SIDEBAR
+# ═══════════════════════════════════════════════════════════════
+with st.sidebar:
+    st.markdown("## ⚗ EcotoxLab")
+    st.markdown(
+        '<span class="badge">{ecotox} v1.4</span>'
+        '<span class="badge badge-blue">Hlina et al. 2021</span>',
+        unsafe_allow_html=True,
+    )
+    st.markdown("---")
+
+    # ── Experimento ──
+    st.markdown("### Experimento")
+    substance = st.text_input("Substância / Espécie", value="Substância X")
+    col1, col2 = st.columns(2)
+    reps  = col1.number_input("Repetições", min_value=1, value=3, step=1)
+    indiv = col2.number_input("Indivíduos", min_value=1, value=10, step=1)
+    total = int(reps * indiv)
+    st.caption(f"Total por grupo: **{total}** organismos")
+
+    col3, col4 = st.columns(2)
+    unit_conc = col3.selectbox("Unid. Conc.", UNITS_CONC)
+    unit_time = col4.selectbox("Unid. Tempo", UNITS_TIME)
+    st.markdown("---")
+
+    # ── Método ──
+    st.markdown("### Método de Análise")
+    st.caption("Baseado no pacote R **{ecotox}**")
+
+    st.markdown("**🔵 Concentração Letal (LC)**")
+    method_lc = st.radio(
+        "lc", ["lc_probit", "lc_logit"],
+        format_func=lambda x: METHODS[x]["label"],
+        label_visibility="collapsed",
+    )
+
+    st.markdown("**🟡 Tempo Letal (LT)**")
+    method_lt = st.radio(
+        "lt", ["lt_probit", "lt_logit"],
+        format_func=lambda x: METHODS[x]["label"],
+        label_visibility="collapsed",
+    )
+
+    st.markdown("**🟢 Não-paramétrico**")
+    use_spearman = st.checkbox("Spearman-Kärber()", value=False)
+
+    # Determina método final
+    if use_spearman:
+        method_id = "spearman"
+    elif method_lt in ["lt_probit", "lt_logit"] and st.session_state.get("_lt_active", False):
+        method_id = method_lt
+    else:
+        method_id = method_lc
+
+    # Botões de seleção explícita de modo
+    st.markdown("---")
+    mode = st.radio(
+        "Modo de análise",
+        ["LC — Concentração Letal", "LT — Tempo Letal"],
+        index=0,
+    )
+    is_lt = mode.startswith("LT")
+    if is_lt:
+        method_id = method_lt
+        st.session_state["_lt_active"] = True
+    else:
+        if not use_spearman:
+            method_id = method_lc
+        st.session_state["_lt_active"] = False
+
+    m = METHODS[method_id]
+    unit = unit_time if m["x_is_time"] else unit_conc
+    x_label = f"Tempo ({unit})" if m["x_is_time"] else f"Concentração ({unit})"
+    cl_label = m["cl_label"]
+    link = m["link"]
+
+    st.markdown(f"**Ativo:** `{m['label']}`")
+    st.markdown(
+        f'<div class="info-box">{METHOD_NOTES[method_id]}</div>',
+        unsafe_allow_html=True,
+    )
+
+
+# ═══════════════════════════════════════════════════════════════
+# CABEÇALHO PRINCIPAL
+# ═══════════════════════════════════════════════════════════════
+st.markdown(
+    f'<div class="main-header">'
+    f'<h2 style="margin:0">⚗ EcotoxLab — Análise de Toxicidade Aquática</h2>'
+    f'<span class="badge">{"{ecotox}"} v1.4</span>'
+    f'<span class="badge badge-blue">{m["label"]}</span>'
+    f'</div>',
+    unsafe_allow_html=True,
+)
+
+tab_data, tab_result = st.tabs(["📋  Dados", "📊  Resultados"])
+
+
+# ═══════════════════════════════════════════════════════════════
+# ABA DADOS
+# ═══════════════════════════════════════════════════════════════
+with tab_data:
+
+    # ── MODO LT ──────────────────────────────────────────────
+    if m["x_is_time"]:
+        st.markdown("#### Tempo Letal — Configuração do Ensaio")
+
+        st.markdown(
+            '<div style="font-size:10px;color:#e3b341;font-weight:700;letter-spacing:1px;margin-bottom:8px">'
+            'PASSO 1 — PARÂMETROS DO TESTE</div>',
+            unsafe_allow_html=True,
+        )
+        col_a, col_b, col_c = st.columns(3)
+        test_duration = col_a.number_input(
+            f"Duração total ({unit})", min_value=1, value=96, step=1,
+            help="Tempo total do bioensaio. Ex: 96h (padrão EPA para peixes)"
+        )
+        lt_interval = col_b.number_input(
+            f"Intervalo de leitura ({unit})", min_value=1, value=24, step=1,
+            help="Frequência de contagem de mortes. Ex: 24 → leituras a cada 24h"
+        )
+        lt_conc = col_c.number_input(
+            f"Concentração fixa ({unit_conc})", min_value=0.0, value=0.0,
+            format="%.4f", help="Registro da concentração usada. Não afeta o cálculo TL50."
+        )
+
+        n_intervals = int(test_duration // lt_interval)
+        st.caption(f"→ **{n_intervals}** intervalos de {lt_interval} {unit}")
+
+        st.markdown("---")
+        st.markdown(
+            '<div style="font-size:10px;color:#e3b341;font-weight:700;letter-spacing:1px;margin-bottom:8px">'
+            'PASSO 2 — MORTES POR INTERVALO DE TEMPO</div>',
+            unsafe_allow_html=True,
+        )
+        st.caption(
+            "Insira as mortes **em cada intervalo** (não acumuladas). "
+            "A mortalidade acumulada é calculada automaticamente."
+        )
+
+        # Inicializa linhas LT no session_state
+        if "lt_rows" not in st.session_state or len(st.session_state["lt_rows"]) != n_intervals:
+            st.session_state["lt_rows"] = [
+                {"t": (i+1)*lt_interval, "dead": 0}
+                for i in range(n_intervals)
+            ]
+
+        # Tabela de entrada LT
+        header_cols = st.columns([1, 2, 2, 1.5, 1.5])
+        for h, col in zip(["#", f"Tempo ({unit})", "Mortes no intervalo", "Acum.", "Mort. %"], header_cols):
+            col.markdown(f'<div style="font-size:10px;color:#768390;font-weight:600">{h}</div>', unsafe_allow_html=True)
+
+        lt_data = []
+        cum = 0
+        for i in range(n_intervals):
+            cols = st.columns([1, 2, 2, 1.5, 1.5])
+            cols[0].markdown(f'<div style="color:#e3b341;font-weight:600;padding-top:8px">{i+1}</div>', unsafe_allow_html=True)
+            t_val   = cols[1].number_input(f"t_{i}", value=float((i+1)*lt_interval), min_value=0.0,
+                                            label_visibility="collapsed", key=f"lt_t_{i}")
+            dead_val = cols[2].number_input(f"d_{i}", value=0, min_value=0, max_value=total,
+                                             label_visibility="collapsed", key=f"lt_d_{i}")
+            cum += dead_val
+            pct  = cum / total * 100 if total > 0 else 0
+            cols[3].markdown(f'<div style="padding-top:8px;color:#768390">{cum}</div>', unsafe_allow_html=True)
+            color = "#e5534b" if pct > 50 else "#d29922" if pct > 25 else "#2da677"
+            cols[4].markdown(
+                f'<div style="padding-top:8px;font-weight:500;color:{color}">{pct:.1f}%</div>',
+                unsafe_allow_html=True,
+            )
+            lt_data.append({"t": t_val, "dead_interval": dead_val, "cum_dead": cum, "pct": pct})
+
+        lt_df = pd.DataFrame(lt_data)
+
+        # Botão calcular
+        calc_lt = st.button(f"▶ Calcular {cl_label} — {m['label']}", key="calc_lt")
+        if calc_lt:
+            if cum > total:
+                st.markdown(
+                    f'<div class="warn-box">⚠ Total acumulado de mortes ({cum}) excede o total de organismos ({total}).</div>',
+                    unsafe_allow_html=True,
+                )
+            elif len(lt_df) < 2:
+                st.markdown('<div class="warn-box">⚠ Mínimo 2 intervalos de tempo.</div>', unsafe_allow_html=True)
+            else:
+                axs = lt_df["t"].tolist()
+                ade = lt_df["cum_dead"].tolist()
+                ato = [total] * len(axs)
+                res = calc_glm(axs, ade, ato, link)
+                if res is None:
+                    st.markdown('<div class="warn-box">⚠ Não foi possível calcular. Verifique os dados (mortalidade deve variar entre os tempos).</div>', unsafe_allow_html=True)
+                else:
+                    st.session_state["result"] = res
+                    st.session_state["obs_x"]  = axs
+                    st.session_state["obs_y"]  = [d/total*100 for d in ade]
+                    st.session_state["method_id"] = method_id
+                    st.success(f"✓ {cl_label} calculado: **{res['cl']:.4f} {unit}**  —  acesse a aba Resultados.")
+
+    # ── MODO LC / SPEARMAN ────────────────────────────────────
+    else:
+        st.markdown(f"#### Concentração × Mortalidade")
+
+        n_doses = st.number_input(
+            "Número de concentrações (incluindo controle = 0)", min_value=2, max_value=20, value=5, step=1
+        )
+
+        # Cabeçalho da tabela
+        hcols = st.columns([0.5, 2, 2, 1.5])
+        for h, col in zip(["#", f"Concentração ({unit_conc})", "Mortos", "Mort. %"], hcols):
+            col.markdown(f'<div style="font-size:10px;color:#768390;font-weight:600">{h}</div>', unsafe_allow_html=True)
+
+        lc_data = []
+        for i in range(int(n_doses)):
+            cols = st.columns([0.5, 2, 2, 1.5])
+            cols[0].markdown(f'<div style="color:#539bf5;font-weight:600;padding-top:8px">{i+1}</div>', unsafe_allow_html=True)
+            dose_val = cols[1].number_input(
+                f"dose_{i}", value=0.0 if i == 0 else 0.0,
+                min_value=0.0, format="%.4f",
+                label_visibility="collapsed", key=f"lc_d_{i}"
+            )
+            dead_val = cols[2].number_input(
+                f"dead_{i}", value=0, min_value=0, max_value=total,
+                label_visibility="collapsed", key=f"lc_k_{i}"
+            )
+            pct  = dead_val / total * 100 if total > 0 else 0
+            color = "#e5534b" if pct > 50 else "#d29922" if pct > 25 else "#2da677"
+            cols[3].markdown(
+                f'<div style="padding-top:8px;font-weight:500;color:{color}">{pct:.1f}%</div>',
+                unsafe_allow_html=True,
+            )
+            lc_data.append({"dose": dose_val, "dead": dead_val})
+
+        lc_df = pd.DataFrame(lc_data)
+
+        # Botão calcular
+        calc_lc = st.button(f"▶ Calcular {cl_label} — {m['label']}", key="calc_lc")
+        if calc_lc:
+            doses = lc_df["dose"].tolist()
+            deaths_raw = lc_df["dead"].tolist()
+            totals_all = [total] * len(doses)
+            probs = [d/total for d in deaths_raw]
+
+            # Correção de Abbott pelo controle (dose == 0)
+            ctrl_idx = next((i for i, d in enumerate(doses) if d == 0), -1)
+            ctrl_p   = probs[ctrl_idx] if ctrl_idx >= 0 else 0.0
+            corr_p   = [abbott(p, ctrl_p) for p in probs]
+            corr_d   = [round(p * total) for p in corr_p]
+
+            # Apenas doses não-zero para a análise
+            axs = [doses[i] for i in range(len(doses)) if doses[i] > 0]
+            ade = [corr_d[i] for i in range(len(doses)) if doses[i] > 0]
+            ato = [total] * len(axs)
+
+            if len(axs) < 2:
+                st.markdown('<div class="warn-box">⚠ Mínimo 2 doses não-zero.</div>', unsafe_allow_html=True)
+            else:
+                if method_id == "spearman":
+                    res = calc_spearman_karber(axs, ade, ato)
+                else:
+                    res = calc_glm(axs, ade, ato, link)
+
+                if res is None:
+                    st.markdown('<div class="warn-box">⚠ Não foi possível calcular. Verifique os dados.</div>', unsafe_allow_html=True)
+                else:
+                    st.session_state["result"]    = res
+                    st.session_state["obs_x"]     = axs
+                    st.session_state["obs_y"]     = [d/total*100 for d in ade]
+                    st.session_state["method_id"] = method_id
+                    st.success(f"✓ {cl_label} calculado: **{res['cl']:.4f} {unit_conc}**  —  acesse a aba Resultados.")
+
+
+# ═══════════════════════════════════════════════════════════════
+# ABA RESULTADOS
+# ═══════════════════════════════════════════════════════════════
+with tab_result:
+    if "result" not in st.session_state:
+        st.info("Insira os dados na aba **Dados** e clique em **Calcular** para ver os resultados.")
+    else:
+        res        = st.session_state["result"]
+        obs_x      = st.session_state["obs_x"]
+        obs_y      = st.session_state["obs_y"]
+        mid        = st.session_state.get("method_id", method_id)
+        m_res      = METHODS[mid]
+        link_res   = m_res["link"]
+        cl_lbl     = m_res["cl_label"]
+        unit_res   = unit_time if m_res["x_is_time"] else unit_conc
+        x_lbl      = f"Tempo ({unit_res})" if m_res["x_is_time"] else f"Concentração ({unit_res})"
+
+        # ── Cards principais ──
+        c1, c2, c3 = st.columns(3)
+        c1.metric(cl_lbl, f"{res['cl']:.4f}", delta=unit_res)
+        c2.metric("Limite Inferior 95%", f"{res['lcl']:.4f}", delta=unit_res)
+        c3.metric("Limite Superior 95%", f"{res['ucl']:.4f}", delta=unit_res)
+
+        # ── Cards GLM ──
+        if res["slope"] is not None:
+            st.markdown("---")
+            d1, d2, d3, d4 = st.columns(4)
+            d1.metric("Slope (b₁)",     f"{res['slope']:.4f}")
+            d2.metric("Intercept (b₀)", f"{res['intercept']:.4f}")
+            d3.metric("z-value (slope)", str(res["z_value"]) if res["z_value"] else "—")
+            d4.metric("Var(log CL)",    f"{res['variance']:.6f}" if res["variance"] else "—")
+
+        st.markdown("---")
+        e1, e2 = st.columns(2)
+        e1.metric("χ² Pearson (GOF)", f"{res['chi2']}")
+        pgof_val = res['pgof']
+        pgof_str = f"{pgof_val:.4f}" if pgof_val and not np.isnan(float(pgof_val)) else "—"
+        pgof_ok  = float(pgof_val) > 0.05 if pgof_val and not np.isnan(float(pgof_val)) else False
+        e2.metric("p-valor GOF", pgof_str, delta="✓ bom ajuste" if pgof_ok else "⚠ ajuste ruim")
+
+        # ── Gráfico ──
+        st.markdown("---")
+        fig = make_chart(res, obs_x, obs_y, x_lbl, cl_lbl, substance, mid, link_res)
+        st.pyplot(fig, use_container_width=True)
+
+        # ── Downloads ──
+        col_jpg, col_svg, col_csv = st.columns(3)
+
+        buf_jpg = BytesIO()
+        fig.savefig(buf_jpg, format="jpg", dpi=300, bbox_inches="tight",
+                    facecolor="#0a0e14")
+        col_jpg.download_button(
+            "📥 Baixar JPG (300 DPI)", buf_jpg.getvalue(),
+            file_name=f"{substance}_{cl_lbl}.jpg", mime="image/jpeg",
+        )
+
+        buf_svg = BytesIO()
+        fig.savefig(buf_svg, format="svg", bbox_inches="tight",
+                    facecolor="#0a0e14")
+        col_svg.download_button(
+            "📥 Baixar SVG (vetor)", buf_svg.getvalue(),
+            file_name=f"{substance}_{cl_lbl}.svg", mime="image/svg+xml",
+        )
+
+        # CSV de resultados
+        result_dict = {
+            "Parâmetro": [cl_lbl, "Limite Inferior 95%", "Limite Superior 95%",
+                          "Slope (b1)", "Intercept (b0)", "z-value", "Var(log CL)",
+                          "chi2 Pearson", "p GOF", "Método"],
+            "Valor": [res["cl"], res["lcl"], res["ucl"],
+                      res["slope"], res["intercept"], res["z_value"], res["variance"],
+                      res["chi2"], res["pgof"], m_res["label"]],
+            "Unidade": [unit_res, unit_res, unit_res,
+                        "—","—","—","—","—","—","—"],
+        }
+        csv_buf = pd.DataFrame(result_dict).to_csv(index=False).encode("utf-8")
+        col_csv.download_button(
+            "📥 Baixar CSV (resultados)", csv_buf,
+            file_name=f"{substance}_{cl_lbl}_resultados.csv", mime="text/csv",
+        )
+
+        # ── Nota metodológica ──
+        st.markdown("---")
+        st.markdown(
+            f'<div class="info-box">'
+            f'<b style="color:#cdd9e5">Referência metodológica:</b> {METHOD_NOTES[mid]} '
+            f'p GOF > 0.05 indica bom ajuste do modelo.'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
