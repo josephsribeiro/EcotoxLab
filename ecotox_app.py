@@ -114,7 +114,7 @@ def calc_glm(doses, deaths, totals, link: str = "probit"):
     """
     GLM binomial via IRLS.
     Equivalente a LC_probit / LC_logit / LT_probit / LT_logit
-    do pacote R {ecotox} (Hlina et al. 2021).
+    do pacote R {ecotox} (Hlina et al. 2021) e modificado por Joseph S. Ribeiro.
     Intervalos de confiança: delta method (Finney 1971).
     """
     data = [
@@ -256,11 +256,11 @@ METHODS = {
 }
 
 METHOD_NOTES = {
-    "lc_probit": "LC_probit(): GLM binomial com ligação probit (Finney 1971). Equivalente ao LC_probit() do pacote R {ecotox} (Hlina et al. 2021).",
-    "lc_logit":  "LC_logit(): GLM binomial com ligação logit. Mais robusto nos extremos da curva. Equivalente ao LC_logit() do {ecotox}.",
-    "lt_probit": "LT_probit(): Mesmo algoritmo do LC_probit com tempo de exposição como variável independente. Equivalente ao LT_probit() do {ecotox}.",
-    "lt_logit":  "LT_logit(): GLM logit com tempo de exposição. Equivalente ao LT_logit() do {ecotox}.",
-    "spearman":  "Spearman-Kärber aparado (Wheeler et al. 2006). Variância por Thompson (1947). Correção de Abbott aplicada à mortalidade do controle.",
+    "lc_probit": "LC_probit(): GLM binomial com ligação probit (Finney 1971). Equivalente ao LC_probit() do pacote R {ecotox} (Hlina et al. 2021) e modificado por Joseph S. Ribeiro",
+    "lc_logit":  "LC_logit(): GLM binomial com ligação logit. Mais robusto nos extremos da curva. Equivalente ao LC_logit() do {ecotox} e modificado por Joseph S. Ribeiro",
+    "lt_probit": "LT_probit(): Mesmo algoritmo do LC_probit com tempo de exposição como variável independente. Equivalente ao LT_probit() do {ecotox e modificado por Joseph S. Ribeiro.",
+    "lt_logit":  "LT_logit(): GLM logit com tempo de exposição. Equivalente ao LT_logit() do {ecotox} e modificado por Joseph S. Ribeiro.",
+    "spearman":  "Spearman-Kärber aparado (Wheeler et al. 2006). Variância por Thompson (1947). Correção de Abbott aplicada à mortalidade do controle e modificado por Joseph S. Ribeiro.",
 }
 
 
@@ -372,7 +372,7 @@ with st.sidebar:
 
     # ── Seleção de método ──
     st.markdown("### 📐 Método de Análise")
-    st.caption("Baseado no pacote R **{ecotox}** — Hlina et al. (2021)")
+    st.caption("Baseado no pacote R **{ecotox}** — Hlina et al. (2021)e modificado por Joseph S. Ribeiro")
 
     st.markdown("**🔵 Concentração Letal (LC)**")
     lc_choice = st.radio(
@@ -428,7 +428,7 @@ with st.sidebar:
 # CABEÇALHO
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown(f"## ⚗ EcotoxLab — {m['label']}")
-st.caption("Análise de Toxicidade Aquática | Baseado no pacote R {ecotox} (Hlina et al. 2021)")
+st.caption("Análise de Toxicidade Aquática | Baseado no pacote R {ecotox} (Hlina et al. 2021)e modificado por Joseph S. Ribeiro")
 st.divider()
 
 tab_data, tab_result = st.tabs(["📋  Dados", "📊  Resultados"])
