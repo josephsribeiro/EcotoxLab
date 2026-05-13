@@ -285,7 +285,7 @@ def make_chart(res, obs_x, obs_y, x_label, cl_label, substance, method_id, link)
     ax.fill_between(xs, y_lower, y_upper, color="#2da677", alpha=0.10)
 
     # Linhas
-    ax.plot(xs, y_upper, color="#2da677", lw=1.3, ls="--", label="IC 95% (Sup/Inf)")
+    ax.plot(xs, y_upper, color="#E74C3C", lw=1.3, ls="--", label="IC 95% (Sup/Inf)")
     ax.plot(xs, y_lower, color="#2da677", lw=1.3, ls="--")
     ax.plot(xs, y_curve, color="#539bf5", lw=2.5,           label=f"Curva {cl_label}")
 
@@ -640,7 +640,6 @@ with tab_data:
                     st.session_state["obs_x"]     = axs
                     st.session_state["obs_y"]     = [d / total * 100 for d in ade]
                     st.session_state["method_id"] = method_id
-                    st.session_state["substance"] = substance
                     st.session_state["unit"]      = unit
                     st.session_state["x_label"]   = x_label
                     st.markdown(
