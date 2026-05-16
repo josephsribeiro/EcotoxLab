@@ -544,7 +544,6 @@ with tab_data:
                     st.session_state["obs_x"]     = axs
                     st.session_state["obs_y"]     = [d / total * 100 for d in ade]
                     st.session_state["method_id"] = method_id
-                    st.session_state["substance"] = substance
                     st.session_state["unit"]      = unit
                     st.session_state["x_label"]   = x_label
                     st.markdown(
