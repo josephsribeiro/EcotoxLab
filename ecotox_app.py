@@ -113,7 +113,7 @@ def calc_spearman_karber(doses, deaths, totals):
 def calc_glm(doses, deaths, totals, link: str = "probit"):
     """
     GLM binomial via IRLS.
-    Equivalente a LC_probit / LC_logit / LT_probit / LT_logit
+    Equivalente a LC probit / LC logit / LT probit / LT logit
     do pacote R {ecotox} (Hlina et al. 2021) e modificado por Joseph S. Ribeiro.
     Intervalos de confiança: delta method (Finney 1971).
     """
@@ -248,18 +248,18 @@ UNITS_CONC = ["µg/L", "µg/g", "µg/mg", "µg/kg", "mg/L", "mg/g", "mg/kg", "ng
 UNITS_TIME = ["h", "min", "dias", "semanas"]
 
 METHODS = {
-    "lc_probit": dict(label="LC_probit", group="LC", link="probit", is_lt=False, cl_label="CL50"),
-    "lc_logit":  dict(label="LC_logit",  group="LC", link="logit",  is_lt=False, cl_label="CL50"),
-    "lt_probit": dict(label="LT_probit", group="LT", link="probit", is_lt=True,  cl_label="TL50"),
-    "lt_logit":  dict(label="LT_logit",  group="LT", link="logit",  is_lt=True,  cl_label="TL50"),
+    "lc_probit": dict(label="LC probit", group="LC", link="probit", is_lt=False, cl_label="CL50"),
+    "lc_logit":  dict(label="LC logit",  group="LC", link="logit",  is_lt=False, cl_label="CL50"),
+    "lt_probit": dict(label="LT probit", group="LT", link="probit", is_lt=True,  cl_label="TL50"),
+    "lt_logit":  dict(label="LT logit",  group="LT", link="logit",  is_lt=True,  cl_label="TL50"),
     "spearman":  dict(label="Spearman-Kärber", group="NP", link=None, is_lt=False, cl_label="CL50"),
 }
 
 METHOD_NOTES = {
-    "lc_probit": "LC_probit: GLM binomial com ligação probit (Finney 1971). Equivalente ao LC_probit do pacote R {ecotox} (Hlina et al. 2021) e modificado por Joseph S. Ribeiro",
-    "lc_logit":  "LC_logit: GLM binomial com ligação logit. Mais robusto nos extremos da curva. Equivalente ao LC_logit do {ecotox} e modificado por Joseph S. Ribeiro",
-    "lt_probit": "LT_probit: Mesmo algoritmo do LC_probit com tempo de exposição como variável independente. Equivalente ao LT_probit do {ecotox e modificado por Joseph S. Ribeiro.",
-    "lt_logit":  "LT_logit: GLM logit com tempo de exposição. Equivalente ao LT_logit do {ecotox} e modificado por Joseph S. Ribeiro.",
+    "lc_probit": "LC probit: GLM binomial com ligação probit (Finney 1971). Equivalente ao LC probit do pacote R {ecotox} (Hlina et al. 2021) e modificado por Joseph S. Ribeiro",
+    "lc_logit":  "LC logit: GLM binomial com ligação logit. Mais robusto nos extremos da curva. Equivalente ao LC logit do {ecotox} e modificado por Joseph S. Ribeiro",
+    "lt_probit": "LT probit: Mesmo algoritmo do LC probit com tempo de exposição como variável independente. Equivalente ao LT_probit do {ecotox e modificado por Joseph S. Ribeiro.",
+    "lt_logit":  "LT logit: GLM logit com tempo de exposição. Equivalente ao LT_logit do {ecotox} e modificado por Joseph S. Ribeiro.",
     "spearman":  "Spearman-Kärber aparado (Wheeler et al. 2006). Variância por Thompson (1947). Correção de Abbott aplicada à mortalidade do controle e modificado por Joseph S. Ribeiro.",
 }
 
