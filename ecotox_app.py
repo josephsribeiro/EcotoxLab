@@ -38,15 +38,15 @@ st.markdown("""
   div[data-testid="stMetric"]{background:#13191f;border:1px solid #2d333b;
     border-radius:10px;padding:14px 16px}
   div[data-testid="stMetricValue"]{color:#539bf5!important;font-size:1.3rem!important}
-  div[data-testid="stMetricLabel"]{color:#768390!important;font-size:.72rem!important}
+  div[data-testid="stMetricLabel"]{color:#ffffff!important;font-size:.72rem!important}
   .stTabs [data-baseweb="tab-list"]{background:#0d1117;border-bottom:1px solid #2d333b}
-  .stTabs [data-baseweb="tab"]{color:#768390}
+  .stTabs [data-baseweb="tab"]{color:#ffffff}
   .stTabs [aria-selected="true"]{color:#2da677!important;
     border-bottom:2px solid #2da677!important}
   h1,h2,h3,h4{color:#cdd9e5!important}
   hr{border-color:#2d333b}
   .info-box{background:#0a0e14;border:1px solid #2d333b;border-radius:8px;
-    padding:12px 16px;font-size:12px;color:#768390;line-height:1.65}
+    padding:12px 16px;font-size:12px;color:#;line-height:1.65}
   .warn-box{background:#2d1217;border:1px solid #e5534b60;border-radius:8px;
     padding:10px 14px;font-size:12px;color:#e5534b}
   .ok-box{background:#0d2b1f;border:1px solid #2da67760;border-radius:8px;
@@ -248,18 +248,18 @@ UNITS_CONC = ["µg/L", "µg/g", "µg/mg", "µg/kg", "mg/L", "mg/g", "mg/kg", "ng
 UNITS_TIME = ["h", "min", "dias", "semanas"]
 
 METHODS = {
-    "lc_probit": dict(label="LC_probit()", group="LC", link="probit", is_lt=False, cl_label="CL50"),
-    "lc_logit":  dict(label="LC_logit()",  group="LC", link="logit",  is_lt=False, cl_label="CL50"),
-    "lt_probit": dict(label="LT_probit()", group="LT", link="probit", is_lt=True,  cl_label="TL50"),
-    "lt_logit":  dict(label="LT_logit()",  group="LT", link="logit",  is_lt=True,  cl_label="TL50"),
-    "spearman":  dict(label="Spearman-Kärber()", group="NP", link=None, is_lt=False, cl_label="CL50"),
+    "lc_probit": dict(label="LC_probit", group="LC", link="probit", is_lt=False, cl_label="CL50"),
+    "lc_logit":  dict(label="LC_logit",  group="LC", link="logit",  is_lt=False, cl_label="CL50"),
+    "lt_probit": dict(label="LT_probit", group="LT", link="probit", is_lt=True,  cl_label="TL50"),
+    "lt_logit":  dict(label="LT_logit",  group="LT", link="logit",  is_lt=True,  cl_label="TL50"),
+    "spearman":  dict(label="Spearman-Kärber", group="NP", link=None, is_lt=False, cl_label="CL50"),
 }
 
 METHOD_NOTES = {
-    "lc_probit": "LC_probit(): GLM binomial com ligação probit (Finney 1971). Equivalente ao LC_probit() do pacote R {ecotox} (Hlina et al. 2021) e modificado por Joseph S. Ribeiro",
-    "lc_logit":  "LC_logit(): GLM binomial com ligação logit. Mais robusto nos extremos da curva. Equivalente ao LC_logit() do {ecotox} e modificado por Joseph S. Ribeiro",
-    "lt_probit": "LT_probit(): Mesmo algoritmo do LC_probit com tempo de exposição como variável independente. Equivalente ao LT_probit() do {ecotox e modificado por Joseph S. Ribeiro.",
-    "lt_logit":  "LT_logit(): GLM logit com tempo de exposição. Equivalente ao LT_logit() do {ecotox} e modificado por Joseph S. Ribeiro.",
+    "lc_probit": "LC_probit: GLM binomial com ligação probit (Finney 1971). Equivalente ao LC_probit do pacote R {ecotox} (Hlina et al. 2021) e modificado por Joseph S. Ribeiro",
+    "lc_logit":  "LC_logit: GLM binomial com ligação logit. Mais robusto nos extremos da curva. Equivalente ao LC_logit do {ecotox} e modificado por Joseph S. Ribeiro",
+    "lt_probit": "LT_probit: Mesmo algoritmo do LC_probit com tempo de exposição como variável independente. Equivalente ao LT_probit do {ecotox e modificado por Joseph S. Ribeiro.",
+    "lt_logit":  "LT_logit: GLM logit com tempo de exposição. Equivalente ao LT_logit do {ecotox} e modificado por Joseph S. Ribeiro.",
     "spearman":  "Spearman-Kärber aparado (Wheeler et al. 2006). Variância por Thompson (1947). Correção de Abbott aplicada à mortalidade do controle e modificado por Joseph S. Ribeiro.",
 }
 
@@ -312,15 +312,15 @@ def make_chart(res, obs_x, obs_y, x_label, cl_label, substance, method_id, link)
         )
 
     # Estética
-    ax.set_xlabel(x_label, color="#768390", fontsize=10)
-    ax.set_ylabel("Mortalidade (%)", color="#768390", fontsize=10)
+    ax.set_xlabel(x_label, color="#", fontsize=10)
+    ax.set_ylabel("Mortalidade (%)", color="#ffffff", fontsize=10)
     ax.set_title(
         f"{substance}  —  {METHODS[method_id]['label']}",
         color="#cdd9e5", fontsize=11, pad=10,
     )
     ax.set_ylim(-5, 112)
     ax.set_yticks(range(0, 110, 10))
-    ax.tick_params(colors="#768390", labelsize=9)
+    ax.tick_params(colors="#ffffff", labelsize=9)
     for sp in ax.spines.values():
         sp.set_color("#2d333b")
     ax.grid(True, color="#2d333b", lw=0.4, ls="--", alpha=0.5)
@@ -480,7 +480,7 @@ with tab_data:
         hc = st.columns([0.5, 1.8, 2.2, 1.3, 1.3])
         for txt, col in zip(["#", f"Tempo ({unit})", f"Mortos no intervalo", "Acumulado", "Mort. %"], hc):
             col.markdown(
-                f'<p style="font-size:10px;color:#768390;font-weight:600;margin:0">{txt}</p>',
+                f'<p style="font-size:10px;color:#ffffff;font-weight:600;margin:0">{txt}</p>',
                 unsafe_allow_html=True,
             )
 
@@ -506,7 +506,7 @@ with tab_data:
             pct = cum_dead / total * 100 if total > 0 else 0.0
             col_pct = "#e5534b" if pct > 50 else "#d29922" if pct > 25 else "#2da677"
             rc[3].markdown(
-                f'<p style="padding-top:6px;color:#768390">{cum_dead}</p>',
+                f'<p style="padding-top:6px;color:#ffffff">{cum_dead}</p>',
                 unsafe_allow_html=True,
             )
             rc[4].markdown(
@@ -567,7 +567,7 @@ with tab_data:
         hc = st.columns([0.5, 2, 2, 1.5])
         for txt, col in zip(["#", f"Concentração ({unit_conc})", "Mortos", "Mort. %"], hc):
             col.markdown(
-                f'<p style="font-size:10px;color:#768390;font-weight:600;margin:0">{txt}</p>',
+                f'<p style="font-size:10px;color:#ffffff;font-weight:600;margin:0">{txt}</p>',
                 unsafe_allow_html=True,
             )
 
