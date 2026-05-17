@@ -366,17 +366,15 @@ with st.sidebar:
     reps  = col_r.number_input("Repetições",  min_value=1, value=3,  step=1, key="reps")
     indiv = col_i.number_input("Indivíduos",  min_value=1, value=10, step=1, key="indiv")
     total = int(reps * indiv)
-  with st.sidebar:
-    st.markdown("## ⚗ EcotoxLab")
 
-    st.markdown(
-        """
-        <p style="color:#ffffff;font-size:14px;">
-        Análise de Toxicidade Aquática
-        </p>
-        """,
-        unsafe_allow_html=True
-    )
+    col_uc, col_ut = st.columns(2)
+    unit_conc = col_uc.selectbox("Unid. Conc.", UNITS_CONC, key="unit_conc")
+    unit_time = col_ut.selectbox("Unid. Tempo", UNITS_TIME, key="unit_time")
+    st.divider()
+
+    # ── Seleção de método ──
+    st.markdown("### 📐 Método de Análise")
+    st.caption("Baseado no pacote R **{ecotox}** — Hlina et al. (2021) e modificado por Joseph S. Ribeiro")
     st.markdown("## ⚗ EcotoxLab")
 
     st.markdown(
