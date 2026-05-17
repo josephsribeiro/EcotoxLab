@@ -27,11 +27,11 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-  .stApp{background:#0a0e14;color:#cdd9e5}
+  .stApp{background:#0a0e14;color:##ffffff}
   section[data-testid="stSidebar"]{background:#0d1117;border-right:1px solid #2d333b}
   .stTextInput input,.stNumberInput input,.stSelectbox select{
     background:#13191f!important;border:1px solid #2d333b!important;
-    color:#cdd9e5!important;border-radius:6px!important}
+    color:##ffffff!important;border-radius:6px!important}
   .stButton>button{background:linear-gradient(135deg,#1a7f64,#2da677);
     color:#fff;border:none;border-radius:8px;font-weight:600;width:100%}
   .stButton>button:hover{filter:brightness(1.1)}
@@ -43,7 +43,7 @@ st.markdown("""
   .stTabs [data-baseweb="tab"]{color:#ffffff}
   .stTabs [aria-selected="true"]{color:#2da677!important;
     border-bottom:2px solid #2da677!important}
-  h1,h2,h3,h4{color:#cdd9e5!important}
+  h1,h2,h3,h4{color:##ffffff!important}
   hr{border-color:#2d333b}
   .info-box{background:#0a0e14;border:1px solid #2d333b;border-radius:8px;
     padding:12px 16px;font-size:12px;color:#;line-height:1.65}
@@ -316,7 +316,7 @@ def make_chart(res, obs_x, obs_y, x_label, cl_label, substance, method_id, link)
     ax.set_ylabel("Mortalidade (%)", color="#ffffff", fontsize=10)
     ax.set_title(
         f"{substance}  —  {METHODS[method_id]['label']}",
-        color="#cdd9e5", fontsize=11, pad=10,
+        color="##ffffff", fontsize=11, pad=10,
     )
     ax.set_ylim(-5, 112)
     ax.set_yticks(range(0, 110, 10))
@@ -333,7 +333,7 @@ def make_chart(res, obs_x, obs_y, x_label, cl_label, substance, method_id, link)
                markersize=6, label="Observado"),
     ]
     legend = ax.legend(handles=handles, facecolor="#13191f", edgecolor="#2d333b",
-                       labelcolor="#cdd9e5", fontsize=9, loc="upper left")
+                       labelcolor="##ffffff", fontsize=9, loc="upper left")
 
     fig.tight_layout(pad=1.5)
     return fig
@@ -372,7 +372,7 @@ with st.sidebar:
 
     # ── Seleção de método ──
     st.markdown("### 📐 Método de Análise")
-    st.caption("Baseado no pacote R **{ecotox}** — Hlina et al. (2021)e modificado por Joseph S. Ribeiro")
+    st.caption("Baseado no pacote R **{ecotox}** — Hlina et al. (2021) e modificado por Joseph S. Ribeiro")
 
     st.markdown("**🔵 Concentração Letal (LC)**")
     lc_choice = st.radio(
@@ -746,7 +746,7 @@ with tab_result:
         st.divider()
         st.markdown(
             f'<div class="info-box">'
-            f'<b style="color:#cdd9e5">Referência metodológica:</b> {METHOD_NOTES[mid]}'
+            f'<b style="color:##ffffff">Referência metodológica:</b> {METHOD_NOTES[mid]}'
             f'<br><br>p GOF &gt; 0.05 indica bom ajuste do modelo aos dados.'
             f'</div>',
             unsafe_allow_html=True,
