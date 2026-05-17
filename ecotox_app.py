@@ -366,7 +366,10 @@ with st.sidebar:
     reps  = col_r.number_input("Repetições",  min_value=1, value=3,  step=1, key="reps")
     indiv = col_i.number_input("Indivíduos",  min_value=1, value=10, step=1, key="indiv")
     total = int(reps * indiv)
-    st.caption(f"Total por grupo: **{total}** organismos")
+   st.markdown(
+    f'<p style="color:#ffffff;">Total por grupo: <b>{total}</b> organismos</p>',
+    unsafe_allow_html=True
+)
 
     col_uc, col_ut = st.columns(2)
     unit_conc = col_uc.selectbox("Unid. Conc.", UNITS_CONC, key="unit_conc")
@@ -431,7 +434,14 @@ with st.sidebar:
 # CABEÇALHO
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown(f"## ⚗ EcotoxLab — {m['label']}")
-st.caption("Análise de Toxicidade Aquática | Baseado no pacote R {ecotox} (Hlina et al. 2021)e modificado por Joseph S. Ribeiro")
+st.markdown(
+    """
+    <p style="color:#ffffff;font-size:14px;">
+    Análise de Toxicidade Aquática | Baseado no pacote R {ecotox} (Hlina et al. 2021) e modificado por Joseph S. Ribeiro
+    </p>
+    """,
+    unsafe_allow_html=True
+)
 st.divider()
 
 tab_data, tab_result = st.tabs(["📋  Dados", "📊  Resultados"])
