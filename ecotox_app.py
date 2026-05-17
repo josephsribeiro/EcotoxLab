@@ -377,6 +377,16 @@ with st.sidebar:
         """,
         unsafe_allow_html=True
     )
+    st.markdown("## ⚗ EcotoxLab")
+
+    st.markdown(
+        """
+        <p style="color:#ffffff;font-size:14px;">
+        Análise de Toxicidade Aquática
+        </p>
+        """,
+        unsafe_allow_html=True
+    )
     st.divider()
     col_uc, col_ut = st.columns(2)
     unit_conc = col_uc.selectbox("Unid. Conc.", UNITS_CONC, key="unit_conc")
