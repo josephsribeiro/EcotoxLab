@@ -353,7 +353,10 @@ def fig_to_bytes(fig, fmt: str, dpi: int = 150) -> bytes:
 
 with st.sidebar:
     st.markdown("## ⚗ EcotoxLab")
-    st.caption("Análise de Toxicidade Aquática")
+    st.markdown(
+    '<p style="color:#ffffff;">Análise de Toxicidade Aquática</p>',
+    unsafe_allow_html=True
+)
     st.divider()
 
     st.markdown("### 🔬 Experimento")
