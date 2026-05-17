@@ -37,7 +37,7 @@ st.markdown("""
   .stButton>button:hover{filter:brightness(1.1)}
   div[data-testid="stMetric"]{background:#13191f;border:1px solid #2d333b;
     border-radius:10px;padding:14px 16px}
-  div[data-testid="stMetricValue"]{color:#539bf5!important;font-size:1.3rem!important}
+  div[data-testid="stMetricValue"]{color:#ffffff!important;font-size:1.3rem!important}
   div[data-testid="stMetricLabel"]{color:#ffffff!important;font-size:.72rem!important}
   .stTabs [data-baseweb="tab-list"]{background:#0d1117;border-bottom:1px solid #2d333b}
   .stTabs [data-baseweb="tab"]{color:#ffffff}
@@ -287,7 +287,7 @@ def make_chart(res, obs_x, obs_y, x_label, cl_label, substance, method_id, link)
     # Linhas
     ax.plot(xs, y_upper, color="#E74C3C", lw=1.3, ls="--", label="IC 95% (Sup/Inf)")
     ax.plot(xs, y_lower, color="#2da677", lw=1.3, ls="--")
-    ax.plot(xs, y_curve, color="#539bf5", lw=2.5,           label=f"Curva {cl_label}")
+    ax.plot(xs, y_curve, color="#ffffff", lw=2.5,           label=f"Curva {cl_label}")
 
     # Pontos observados
     ax.scatter(obs_x, obs_y, color="#e3b341", s=65, zorder=6,
@@ -295,13 +295,13 @@ def make_chart(res, obs_x, obs_y, x_label, cl_label, substance, method_id, link)
 
     # Referências
     ax.axhline(50, color="#3a4048", lw=0.8, ls=":")
-    ax.axvline(res["cl"],  color="#539bf5", lw=1.2, ls="--", alpha=0.85)
+    ax.axvline(res["cl"],  color="#ffffff", lw=1.2, ls="--", alpha=0.85)
     ax.axvline(res["lcl"], color="#2da677", lw=0.8, ls=":",  alpha=0.65)
     ax.axvline(res["ucl"], color="#2da677", lw=0.8, ls=":",  alpha=0.65)
 
     # Anotações eixo X
     yb = ax.get_ylim()[0]
-    for val, lbl, col in [(res["cl"], cl_label, "#539bf5"),
+    for val, lbl, col in [(res["cl"], cl_label, "#ffffff"),
                           (res["lcl"], "LI", "#2da677"),
                           (res["ucl"], "LS", "#2da677")]:
         ax.annotate(
@@ -327,7 +327,7 @@ def make_chart(res, obs_x, obs_y, x_label, cl_label, substance, method_id, link)
 
     # Legenda personalizada
     handles = [
-        Line2D([0], [0], color="#539bf5", lw=2.5,         label=f"Curva {cl_label}"),
+        Line2D([0], [0], color="#ffffff", lw=2.5,         label=f"Curva {cl_label}"),
         Line2D([0], [0], color="#2da677", lw=1.3, ls="--", label="IC 95%"),
         Line2D([0], [0], marker="o", color="#e3b341", ls="none",
                markersize=6, label="Observado"),
@@ -504,7 +504,7 @@ with tab_data:
             )
             cum_dead += int(d_val)
             pct = cum_dead / total * 100 if total > 0 else 0.0
-            col_pct = "#e5534b" if pct > 50 else "#d29922" if pct > 25 else "#2da677"
+            col_pct = "#e5534b" if pct > 50 else "#ffffff" if pct > 25 else "#2da677"
             rc[3].markdown(
                 f'<p style="padding-top:6px;color:#ffffff">{cum_dead}</p>',
                 unsafe_allow_html=True,
@@ -575,7 +575,7 @@ with tab_data:
         for i in range(int(n_doses)):
             rc = st.columns([0.5, 2, 2, 1.5])
             rc[0].markdown(
-                f'<p style="color:#539bf5;font-weight:600;padding-top:6px">{i+1}</p>',
+                f'<p style="color:#ffffff;font-weight:600;padding-top:6px">{i+1}</p>',
                 unsafe_allow_html=True,
             )
             dose_val = rc[1].number_input(
@@ -587,7 +587,7 @@ with tab_data:
                 value=0, min_value=0, max_value=total, step=1, key=f"lc_dead_{i}",
             )
             pct = dead_val / total * 100 if total > 0 else 0.0
-            col_pct = "#e5534b" if pct > 50 else "#d29922" if pct > 25 else "#2da677"
+            col_pct = "#e5534b" if pct > 50 else "#ffffff" if pct > 25 else "#2da677"
             rc[3].markdown(
                 f'<p style="padding-top:6px;color:{col_pct};font-weight:600">{pct:.1f}%</p>',
                 unsafe_allow_html=True,
