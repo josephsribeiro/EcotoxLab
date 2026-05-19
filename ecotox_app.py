@@ -27,7 +27,7 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-  .stApp{background:#0a0e14;color:#cdd9e5}
+  .stApp{background:#0b3d91;color:#cdd9e5}
   section[data-testid="stSidebar"]{background:#0d1117;border-right:1px solid #2d333b}
   .stTextInput input,.stNumberInput input,.stSelectbox select{
     background:#13191f!important;border:1px solid #2d333b!important;
