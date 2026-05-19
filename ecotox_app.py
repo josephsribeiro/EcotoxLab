@@ -384,24 +384,26 @@ lc_choice = st.radio(
     key="lc_radio",
 )
 
-    st.markdown("**🟡 Tempo Letal (LT)**")
-    lt_choice = st.radio(
-        "lt_radio",
-        options=["lt_probit", "lt_logit"],
-        format_func=lambda k: METHODS[k]["label"],
-        label_visibility="collapsed",
-        key="lt_radio",
-    )
+st.markdown('<p style="color: #ffffff; font-weight: bold;">🟡 Tempo Letal (LT)</p>', unsafe_allow_html=True)
+lt_choice = st.radio(
+    "lt_radio",
+    options=["lt_probit", "lt_logit"],
+    format_func=lambda k: METHODS[k]["label"],
+    label_visibility="collapsed",
+    key="lt_radio",
+)
 
-    st.markdown("**🟢 Não-paramétrico**")
-    use_sk = st.checkbox("Spearman-Kärber()", key="use_sk")
+st.markdown('<p style="color: #ffffff; font-weight: bold;">🟢 Não-paramétrico</p>', unsafe_allow_html=True)
+use_sk = st.checkbox("Spearman-Kärber()", key="use_sk")
 
-    st.divider()
-    analysis_mode = st.radio(
-        "Modo de análise",
-        options=["LC — Concentração Letal", "LT — Tempo Letal"],
-        key="analysis_mode",
-    )
+st.divider()
+st.markdown('<p style="color: #ffffff; font-weight: bold;">📊 Modo de análise</p>', unsafe_allow_html=True)
+analysis_mode = st.radio(
+    "Modo de análise",
+    options=["LC — Concentração Letal", "LT — Tempo Letal"],
+    key="analysis_mode",
+    label_visibility="collapsed",
+)
 
     # Método final
     if use_sk:
