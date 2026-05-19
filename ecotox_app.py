@@ -27,23 +27,23 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-  .stApp{background:#0a0e14;color:##ffffff}
+  .stApp{background:#0a0e14;color:#cdd9e5}
   section[data-testid="stSidebar"]{background:#0d1117;border-right:1px solid #2d333b}
   .stTextInput input,.stNumberInput input,.stSelectbox select{
     background:#13191f!important;border:1px solid #2d333b!important;
-    color:##ffffff!important;border-radius:6px!important}
+    color:#cdd9e5!important;border-radius:6px!important}
   .stButton>button{background:linear-gradient(135deg,#1a7f64,#2da677);
     color:#fff;border:none;border-radius:8px;font-weight:600;width:100%}
   .stButton>button:hover{filter:brightness(1.1)}
   div[data-testid="stMetric"]{background:#13191f;border:1px solid #2d333b;
     border-radius:10px;padding:14px 16px}
-  div[data-testid="stMetricValue"]{color:#ffffff!important;font-size:1.3rem!important}
+  div[data-testid="stMetricValue"]{color:#539bf5!important;font-size:1.3rem!important}
   div[data-testid="stMetricLabel"]{color:#ffffff!important;font-size:.72rem!important}
   .stTabs [data-baseweb="tab-list"]{background:#0d1117;border-bottom:1px solid #2d333b}
   .stTabs [data-baseweb="tab"]{color:#ffffff}
   .stTabs [aria-selected="true"]{color:#2da677!important;
     border-bottom:2px solid #2da677!important}
-  h1,h2,h3,h4{color:##ffffff!important}
+  h1,h2,h3,h4{color:#cdd9e5!important}
   hr{border-color:#2d333b}
   .info-box{background:#0a0e14;border:1px solid #2d333b;border-radius:8px;
     padding:12px 16px;font-size:12px;color:#;line-height:1.65}
@@ -287,7 +287,7 @@ def make_chart(res, obs_x, obs_y, x_label, cl_label, substance, method_id, link)
     # Linhas
     ax.plot(xs, y_upper, color="#E74C3C", lw=1.3, ls="--", label="IC 95% (Sup/Inf)")
     ax.plot(xs, y_lower, color="#2da677", lw=1.3, ls="--")
-    ax.plot(xs, y_curve, color="#ffffff", lw=2.5,           label=f"Curva {cl_label}")
+    ax.plot(xs, y_curve, color="#539bf5", lw=2.5,           label=f"Curva {cl_label}")
 
     # Pontos observados
     ax.scatter(obs_x, obs_y, color="#e3b341", s=65, zorder=6,
@@ -295,13 +295,13 @@ def make_chart(res, obs_x, obs_y, x_label, cl_label, substance, method_id, link)
 
     # Referências
     ax.axhline(50, color="#3a4048", lw=0.8, ls=":")
-    ax.axvline(res["cl"],  color="#ffffff", lw=1.2, ls="--", alpha=0.85)
+    ax.axvline(res["cl"],  color="#539bf5", lw=1.2, ls="--", alpha=0.85)
     ax.axvline(res["lcl"], color="#2da677", lw=0.8, ls=":",  alpha=0.65)
     ax.axvline(res["ucl"], color="#2da677", lw=0.8, ls=":",  alpha=0.65)
 
     # Anotações eixo X
     yb = ax.get_ylim()[0]
-    for val, lbl, col in [(res["cl"], cl_label, "#ffffff"),
+    for val, lbl, col in [(res["cl"], cl_label, "#539bf5"),
                           (res["lcl"], "LI", "#2da677"),
                           (res["ucl"], "LS", "#2da677")]:
         ax.annotate(
@@ -316,7 +316,7 @@ def make_chart(res, obs_x, obs_y, x_label, cl_label, substance, method_id, link)
     ax.set_ylabel("Mortalidade (%)", color="#ffffff", fontsize=10)
     ax.set_title(
         f"{substance}  —  {METHODS[method_id]['label']}",
-        color="##ffffff", fontsize=11, pad=10,
+        color="#cdd9e5", fontsize=11, pad=10,
     )
     ax.set_ylim(-5, 112)
     ax.set_yticks(range(0, 110, 10))
@@ -327,13 +327,13 @@ def make_chart(res, obs_x, obs_y, x_label, cl_label, substance, method_id, link)
 
     # Legenda personalizada
     handles = [
-        Line2D([0], [0], color="#ffffff", lw=2.5,         label=f"Curva {cl_label}"),
+        Line2D([0], [0], color="#539bf5", lw=2.5,         label=f"Curva {cl_label}"),
         Line2D([0], [0], color="#2da677", lw=1.3, ls="--", label="IC 95%"),
         Line2D([0], [0], marker="o", color="#e3b341", ls="none",
                markersize=6, label="Observado"),
     ]
     legend = ax.legend(handles=handles, facecolor="#13191f", edgecolor="#2d333b",
-                       labelcolor="##ffffff", fontsize=9, loc="upper left")
+                       labelcolor="#cdd9e5", fontsize=9, loc="upper left")
 
     fig.tight_layout(pad=1.5)
     return fig
@@ -353,10 +353,7 @@ def fig_to_bytes(fig, fmt: str, dpi: int = 150) -> bytes:
 
 with st.sidebar:
     st.markdown("## ⚗ EcotoxLab")
-    st.markdown(
-    '<p style="color:#ffffff;">Análise de Toxicidade Aquática</p>',
-    unsafe_allow_html=True
-)
+    st.caption("Análise de Toxicidade Aquática")
     st.divider()
 
     st.markdown("### 🔬 Experimento")
@@ -366,6 +363,7 @@ with st.sidebar:
     reps  = col_r.number_input("Repetições",  min_value=1, value=3,  step=1, key="reps")
     indiv = col_i.number_input("Indivíduos",  min_value=1, value=10, step=1, key="indiv")
     total = int(reps * indiv)
+    st.caption(f"Total por grupo: **{total}** organismos")
 
     col_uc, col_ut = st.columns(2)
     unit_conc = col_uc.selectbox("Unid. Conc.", UNITS_CONC, key="unit_conc")
@@ -374,26 +372,7 @@ with st.sidebar:
 
     # ── Seleção de método ──
     st.markdown("### 📐 Método de Análise")
-    st.caption("Baseado no pacote R **{ecotox}** — Hlina et al. (2021) e modificado por Joseph S. Ribeiro")
-    st.markdown("## ⚗ EcotoxLab")
-
-    st.markdown(
-        """
-        <p style="color:#ffffff;font-size:14px;">
-        Análise de Toxicidade Aquática
-        </p>
-        """,
-        unsafe_allow_html=True
-    )
-    st.divider()
-    col_uc, col_ut = st.columns(2)
-    unit_conc = col_uc.selectbox("Unid. Conc.", UNITS_CONC, key="unit_conc")
-    unit_time = col_ut.selectbox("Unid. Tempo", UNITS_TIME, key="unit_time")
-    st.divider()
-
-    # ── Seleção de método ──
-    st.markdown("### 📐 Método de Análise")
-    st.caption("Baseado no pacote R **{ecotox}** — Hlina et al. (2021) e modificado por Joseph S. Ribeiro")
+    st.caption("Baseado no pacote R **{ecotox}** — Hlina et al. (2021)e modificado por Joseph S. Ribeiro")
 
     st.markdown("**🔵 Concentração Letal (LC)**")
     lc_choice = st.radio(
@@ -449,14 +428,7 @@ with st.sidebar:
 # CABEÇALHO
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown(f"## ⚗ EcotoxLab — {m['label']}")
-st.markdown(
-    """
-    <p style="color:#ffffff;font-size:14px;">
-    Análise de Toxicidade Aquática | Baseado no pacote R {ecotox} (Hlina et al. 2021) e modificado por Joseph S. Ribeiro
-    </p>
-    """,
-    unsafe_allow_html=True
-)
+st.caption("Análise de Toxicidade Aquática | Baseado no pacote R {ecotox} (Hlina et al. 2021)e modificado por Joseph S. Ribeiro")
 st.divider()
 
 tab_data, tab_result = st.tabs(["📋  Dados", "📊  Resultados"])
@@ -532,7 +504,7 @@ with tab_data:
             )
             cum_dead += int(d_val)
             pct = cum_dead / total * 100 if total > 0 else 0.0
-            col_pct = "#e5534b" if pct > 50 else "#ffffff" if pct > 25 else "#2da677"
+            col_pct = "#e5534b" if pct > 50 else "#d29922" if pct > 25 else "#2da677"
             rc[3].markdown(
                 f'<p style="padding-top:6px;color:#ffffff">{cum_dead}</p>',
                 unsafe_allow_html=True,
@@ -603,7 +575,7 @@ with tab_data:
         for i in range(int(n_doses)):
             rc = st.columns([0.5, 2, 2, 1.5])
             rc[0].markdown(
-                f'<p style="color:#ffffff;font-weight:600;padding-top:6px">{i+1}</p>',
+                f'<p style="color:#539bf5;font-weight:600;padding-top:6px">{i+1}</p>',
                 unsafe_allow_html=True,
             )
             dose_val = rc[1].number_input(
@@ -615,7 +587,7 @@ with tab_data:
                 value=0, min_value=0, max_value=total, step=1, key=f"lc_dead_{i}",
             )
             pct = dead_val / total * 100 if total > 0 else 0.0
-            col_pct = "#e5534b" if pct > 50 else "#ffffff" if pct > 25 else "#2da677"
+            col_pct = "#e5534b" if pct > 50 else "#d29922" if pct > 25 else "#2da677"
             rc[3].markdown(
                 f'<p style="padding-top:6px;color:{col_pct};font-weight:600">{pct:.1f}%</p>',
                 unsafe_allow_html=True,
@@ -774,7 +746,7 @@ with tab_result:
         st.divider()
         st.markdown(
             f'<div class="info-box">'
-            f'<b style="color:##ffffff">Referência metodológica:</b> {METHOD_NOTES[mid]}'
+            f'<b style="color:#cdd9e5">Referência metodológica:</b> {METHOD_NOTES[mid]}'
             f'<br><br>p GOF &gt; 0.05 indica bom ajuste do modelo aos dados.'
             f'</div>',
             unsafe_allow_html=True,
