@@ -30,93 +30,66 @@ st.markdown("""
   .stApp{background:#0a0e14;color:#cdd9e5}
   section[data-testid="stSidebar"]{background:#0d1117;border-right:1px solid #2d333b}
   
-  /* ESTILOS PARA A SIDEBAR - CORES ESPECÍFICAS */
-  
-  /* Texto "Análise de Toxicidade Aquática" - dourado */
-  section[data-testid="stSidebar"] .stCaption {
+  /* FORÇAR TODOS OS TEXTOS DA SIDEBAR COMEÇAREM COM COR PADRÃO */
+  section[data-testid="stSidebar"] * {
     color: #e3b341 !important;
   }
   
-  /* Todos os labels dos inputs - dourado */
-  section[data-testid="stSidebar"] .stTextInput label,
-  section[data-testid="stSidebar"] .stNumberInput label,
-  section[data-testid="stSidebar"] .stSelectbox label {
-    color: #e3b341 !important;
-  }
-  
-  /* Total por grupo (st.caption) - dourado */
-  section[data-testid="stSidebar"] .stMarkdown p,
-  section[data-testid="stSidebar"] .stCaption p {
-    color: #e3b341 !important;
-  }
-  
-  /* Texto "Substância / Espécie" já está incluso nos labels acima */
-  
-  /* Opções do radio (LC probit, LC logit, LT probit, LT logit) - dourado */
-  section[data-testid="stSidebar"] .stRadio label span {
-    color: #e3b341 !important;
-  }
-  
-  /* Texto do checkbox "Spearman-Kärber" - dourado */
-  section[data-testid="stSidebar"] .stCheckbox label span {
-    color: #e3b341 !important;
-  }
-  
-  /* Texto descritivo do método - dourado */
-  section[data-testid="stSidebar"] .info-box {
-    color: #e3b341 !important;
+  /* EXCEÇÕES - TEXTOS QUE DEVEM SER BRANCOS */
+  section[data-testid="stSidebar"] h1,
+  section[data-testid="stSidebar"] h2,
+  section[data-testid="stSidebar"] h3,
+  section[data-testid="stSidebar"] h4,
+  section[data-testid="stSidebar"] h5,
+  section[data-testid="stSidebar"] .stMarkdown h1,
+  section[data-testid="stSidebar"] .stMarkdown h2,
+  section[data-testid="stSidebar"] .stMarkdown h3 {
+    color: #cdd9e5 !important;
   }
   
   /* "Modo de análise" - BRANCO e NEGRITO */
-  section[data-testid="stSidebar"] .stRadio:has(> div > p) > div > p,
-  section[data-testid="stSidebar"] p:contains("Modo de análise") {
+  section[data-testid="stSidebar"] .stMarkdown strong,
+  section[data-testid="stSidebar"] strong {
     color: #ffffff !important;
     font-weight: bold !important;
   }
   
-  /* Opções do radio "LC — Concentração Letal" e "LT — Tempo Letal" - dourado */
-  section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] label span {
-    color: #e3b341 !important;
-  }
-  
-  /* "Método ativo:" - BRANCO e NEGRITO */
-  section[data-testid="stSidebar"] .stMarkdown strong {
-    color: #ffffff !important;
-    font-weight: bold !important;
-  }
-  
-  /* Método ativo valor (ex: `LC probit`) - manter branco */
-  section[data-testid="stSidebar"] code {
+  /* "Método ativo:" e o valor - BRANCOS */
+  section[data-testid="stSidebar"] code,
+  section[data-testid="stSidebar"] .stMarkdown code {
     color: #ffffff !important;
     background: #1a1f26 !important;
   }
   
-  /* Os textos em markdown com **negrito** na sidebar */
-  section[data-testid="stSidebar"] .stMarkdown strong {
-    color: #ffffff !important;
-  }
+  /* Botões - manter estilo original */
+  .stButton>button{background:linear-gradient(135deg,#1a7f64,#2da677);
+    color:#fff!important;border:none;border-radius:8px;font-weight:600;width:100%}
+  .stButton>button:hover{filter:brightness(1.1)}
   
-  /* Resto do seu CSS existente... */
+  /* Inputs e selects - manter fundo escuro */
   .stTextInput input,.stNumberInput input,.stSelectbox select{
     background:#13191f!important;border:1px solid #2d333b!important;
     color:#cdd9e5!important;border-radius:6px!important}
-  .stButton>button{background:linear-gradient(135deg,#1a7f64,#2da677);
-    color:#fff;border:none;border-radius:8px;font-weight:600;width:100%}
-  .stButton>button:hover{filter:brightness(1.1)}
+  
+  /* Métricas - manter estilo */
   div[data-testid="stMetric"]{background:#13191f;border:1px solid #2d333b;
     border-radius:10px;padding:14px 16px}
   div[data-testid="stMetricValue"]{color:#539bf5!important;font-size:1.3rem!important}
   div[data-testid="stMetricLabel"]{color:#ffffff!important;font-size:.72rem!important}
+  
+  /* Tabs - manter estilo */
   .stTabs [data-baseweb="tab-list"]{background:#0d1117;border-bottom:1px solid #2d333b}
   .stTabs [data-baseweb="tab"]{color:#ffffff}
   .stTabs [aria-selected="true"]{color:#2da677!important;
     border-bottom:2px solid #2da677!important}
-  h1,h2,h3,h4{color:#cdd9e5!important}
+  
   hr{border-color:#2d333b}
   .warn-box{background:#2d1217;border:1px solid #e5534b60;border-radius:8px;
     padding:10px 14px;font-size:12px;color:#e5534b}
   .ok-box{background:#0d2b1f;border:1px solid #2da67760;border-radius:8px;
     padding:10px 14px;font-size:12px;color:#2da677}
+  .info-box{background:#0a0e14;border:1px solid #2d333b;border-radius:8px;
+    padding:12px 16px;font-size:12px;line-height:1.65}
 </style>
 """, unsafe_allow_html=True)
 
