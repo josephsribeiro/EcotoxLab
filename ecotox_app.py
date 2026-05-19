@@ -45,6 +45,7 @@ st.markdown("""
     border-bottom:2px solid #2da677!important}
   h1,h2,h3,h4{color:#cdd9e5!important}
   hr{border-color:#2d333b}
+  .stNumberInput label p, .stNumberInput label {color: #e3b341 !important;}
   .info-box{background:#0a0e14;border:1px solid #2d333b;border-radius:8px;
     padding:12px 16px;font-size:12px;color:#;line-height:1.65}
   .warn-box{background:#2d1217;border:1px solid #e5534b60;border-radius:8px;
