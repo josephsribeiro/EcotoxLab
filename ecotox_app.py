@@ -375,14 +375,14 @@ with st.sidebar:
     st.markdown("### 📐 Método de Análise")
     st.caption("Baseado no pacote R **{ecotox}** — Hlina et al. (2021)e modificado por Joseph S. Ribeiro")
 
-    st.markdown("**🔵 Concentração Letal (LC)**")
-    lc_choice = st.radio(
-        "lc_radio",
-        options=["lc_probit", "lc_logit"],
-        format_func=lambda k: METHODS[k]["label"],
-        label_visibility="collapsed",
-        key="lc_radio",
-    )
+    st.markdown('<p style="color: #ffffff; font-weight: bold;">🔵 Concentração Letal (LC)</p>', unsafe_allow_html=True)
+lc_choice = st.radio(
+    "lc_radio",
+    options=["lc_probit", "lc_logit"],
+    format_func=lambda k: METHODS[k]["label"],
+    label_visibility="collapsed",
+    key="lc_radio",
+)
 
     st.markdown("**🟡 Tempo Letal (LT)**")
     lt_choice = st.radio(
