@@ -27,8 +27,76 @@ st.set_page_config(
 
 st.markdown("""
 <style>
- .stApp{background:#0a0e14;color:#cdd9e5}
+  .stApp{background:#0a0e14;color:#cdd9e5}
   section[data-testid="stSidebar"]{background:#0d1117;border-right:1px solid #2d333b}
+  
+  /* ESTILOS PARA A SIDEBAR - CORES ESPECÍFICAS */
+  
+  /* Texto "Análise de Toxicidade Aquática" - dourado */
+  section[data-testid="stSidebar"] .stCaption {
+    color: #e3b341 !important;
+  }
+  
+  /* Todos os labels dos inputs - dourado */
+  section[data-testid="stSidebar"] .stTextInput label,
+  section[data-testid="stSidebar"] .stNumberInput label,
+  section[data-testid="stSidebar"] .stSelectbox label {
+    color: #e3b341 !important;
+  }
+  
+  /* Total por grupo (st.caption) - dourado */
+  section[data-testid="stSidebar"] .stMarkdown p,
+  section[data-testid="stSidebar"] .stCaption p {
+    color: #e3b341 !important;
+  }
+  
+  /* Texto "Substância / Espécie" já está incluso nos labels acima */
+  
+  /* Opções do radio (LC probit, LC logit, LT probit, LT logit) - dourado */
+  section[data-testid="stSidebar"] .stRadio label span {
+    color: #e3b341 !important;
+  }
+  
+  /* Texto do checkbox "Spearman-Kärber" - dourado */
+  section[data-testid="stSidebar"] .stCheckbox label span {
+    color: #e3b341 !important;
+  }
+  
+  /* Texto descritivo do método - dourado */
+  section[data-testid="stSidebar"] .info-box {
+    color: #e3b341 !important;
+  }
+  
+  /* "Modo de análise" - BRANCO e NEGRITO */
+  section[data-testid="stSidebar"] .stRadio:has(> div > p) > div > p,
+  section[data-testid="stSidebar"] p:contains("Modo de análise") {
+    color: #ffffff !important;
+    font-weight: bold !important;
+  }
+  
+  /* Opções do radio "LC — Concentração Letal" e "LT — Tempo Letal" - dourado */
+  section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] label span {
+    color: #e3b341 !important;
+  }
+  
+  /* "Método ativo:" - BRANCO e NEGRITO */
+  section[data-testid="stSidebar"] .stMarkdown strong {
+    color: #ffffff !important;
+    font-weight: bold !important;
+  }
+  
+  /* Método ativo valor (ex: `LC probit`) - manter branco */
+  section[data-testid="stSidebar"] code {
+    color: #ffffff !important;
+    background: #1a1f26 !important;
+  }
+  
+  /* Os textos em markdown com **negrito** na sidebar */
+  section[data-testid="stSidebar"] .stMarkdown strong {
+    color: #ffffff !important;
+  }
+  
+  /* Resto do seu CSS existente... */
   .stTextInput input,.stNumberInput input,.stSelectbox select{
     background:#13191f!important;border:1px solid #2d333b!important;
     color:#cdd9e5!important;border-radius:6px!important}
@@ -45,9 +113,6 @@ st.markdown("""
     border-bottom:2px solid #2da677!important}
   h1,h2,h3,h4{color:#cdd9e5!important}
   hr{border-color:#2d333b}
-  .stNumberInput label p, .stNumberInput label {color: #e3b341 !important;}
-  .info-box{background:#0a0e14;border:1px solid #2d333b;border-radius:8px;
-    padding:12px 16px;font-size:12px;color:#;line-height:1.65}
   .warn-box{background:#2d1217;border:1px solid #e5534b60;border-radius:8px;
     padding:10px 14px;font-size:12px;color:#e5534b}
   .ok-box{background:#0d2b1f;border:1px solid #2da67760;border-radius:8px;
@@ -354,54 +419,56 @@ def fig_to_bytes(fig, fmt: str, dpi: int = 150) -> bytes:
 
 with st.sidebar:
     st.markdown("## ⚗ EcotoxLab")
-    st.caption("Análise de Toxicidade Aquática")
+    st.caption("Análise de Toxicidade Aquática")  # Será #e3b341
     st.divider()
 
     st.markdown("### 🔬 Experimento")
-    substance = st.text_input("Substância / Espécie", value="Substância X", key="substance")
+    substance = st.text_input("Substância / Espécie", value="Substância X", key="substance")  # Label será #e3b341
 
     col_r, col_i = st.columns(2)
     reps  = col_r.number_input("Repetições",  min_value=1, value=3,  step=1, key="reps")
     indiv = col_i.number_input("Indivíduos",  min_value=1, value=10, step=1, key="indiv")
     total = int(reps * indiv)
-    st.caption(f"Total por grupo: **{total}** organismos")
+    st.caption(f"Total por grupo: **{total}** organismos")  # Será #e3b341
 
     col_uc, col_ut = st.columns(2)
-    unit_conc = col_uc.selectbox("Unid. Conc.", UNITS_CONC, key="unit_conc")
-    unit_time = col_ut.selectbox("Unid. Tempo", UNITS_TIME, key="unit_time")
+    unit_conc = col_uc.selectbox("Unid. Conc.", UNITS_CONC, key="unit_conc")  # Label será #e3b341
+    unit_time = col_ut.selectbox("Unid. Tempo", UNITS_TIME, key="unit_time")  # Label será #e3b341
     st.divider()
 
-    # ── Seleção de método ──
     st.markdown("### 📐 Método de Análise")
-    st.caption("Baseado no pacote R **{ecotox}** — Hlina et al. (2021)e modificado por Joseph S. Ribeiro")
+    st.caption("Baseado no pacote R **{ecotox}** — Hlina et al. (2021) e modificado por Joseph S. Ribeiro")  # Será #e3b341
 
-    st.markdown('<p style="color: #ffffff; font-weight: bold;">🔵 Concentração Letal (LC)</p>', unsafe_allow_html=True)
+    st.markdown("**🔵 Concentração Letal (LC)**")  # Será BRANCO (negrito)
     lc_choice = st.radio(
         "lc_radio",
         options=["lc_probit", "lc_logit"],
         format_func=lambda k: METHODS[k]["label"],
         label_visibility="collapsed",
         key="lc_radio",
-    )
+    )  # Opções "LC probit" e "LC logit" serão #e3b341
 
-    st.markdown('<p style="color: #ffffff; font-weight: bold;">🟡 Tempo Letal (LT)</p>', unsafe_allow_html=True)
+    st.markdown("**🟡 Tempo Letal (LT)**")  # Será BRANCO (negrito)
     lt_choice = st.radio(
         "lt_radio",
         options=["lt_probit", "lt_logit"],
         format_func=lambda k: METHODS[k]["label"],
         label_visibility="collapsed",
         key="lt_radio",
-    )
+    )  # Opções "LT probit" e "LT logit" serão #e3b341
 
-    st.markdown('<p style="color: #ffffff; font-weight: bold;">🟢 Não-paramétrico</p>', unsafe_allow_html=True)
-    use_sk = st.checkbox("Spearman-Kärber()", key="use_sk")
+    st.markdown("**🟢 Não-paramétrico**")  # Será BRANCO (negrito)
+    use_sk = st.checkbox("Spearman-Kärber", key="use_sk")  # Texto será #e3b341
 
     st.divider()
+    
+    st.markdown("**Modo de análise**")  # Será BRANCO e NEGRITO
     analysis_mode = st.radio(
         "Modo de análise",
         options=["LC — Concentração Letal", "LT — Tempo Letal"],
         key="analysis_mode",
-    )
+        label_visibility="collapsed",
+    )  # Opções serão #e3b341
 
     # Método final
     if use_sk:
@@ -418,18 +485,18 @@ with st.sidebar:
     unit    = unit_time if is_lt else unit_conc
     x_label = f"Tempo ({unit})" if is_lt else f"Concentração ({unit})"
 
-    st.markdown(f"**Método ativo:** `{m['label']}`")
+    st.markdown(f"**Método ativo:** `{m['label']}`")  # Todo texto será BRANCO e NEGRITO
     st.markdown(
         f'<div class="info-box">{METHOD_NOTES[method_id]}</div>',
         unsafe_allow_html=True,
-    )
+    )  # Conteúdo da info-box será #e3b341
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CABEÇALHO
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown(f"## ⚗ EcotoxLab — {m['label']}")
-st.caption("Análise de Toxicidade Aquática | Baseado no pacote R {ecotox} (Hlina et al. 2021)e modificado por Joseph S. Ribeiro")
+st.caption("Análise de Toxicidade Aquática | Baseado no pacote R {ecotox} (Hlina et al. 2021) e modificado por Joseph S. Ribeiro")
 st.divider()
 
 tab_data, tab_result = st.tabs(["📋  Dados", "📊  Resultados"])
