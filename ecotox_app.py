@@ -392,7 +392,7 @@ def fig_to_bytes(fig, fmt: str, dpi: int = 150) -> bytes:
 
 with st.sidebar:
     st.markdown("## ⚗ EcotoxLab")
-    st.caption("É a reunião dos principais modelos estátisticos de tóxicologia, contendo os Testes paramétricos de Concentração Letal (LC) e Tempo Letal (LT) Logit, Probit e Não-paramétrico ")  # Será #e3b341
+    st.caption("É a reunião dos principais modelos estátisticos de toxicologia, contendo os Testes paramétricos de Concentração Letal (LC) e Tempo Letal (LT) Logit, Probit e Não-paramétrico ")  # Será #e3b341
     st.divider()
 
     st.markdown("### 🔬 Experimento")
