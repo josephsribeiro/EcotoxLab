@@ -297,8 +297,8 @@ METHODS = {
 METHOD_NOTES = {
     "lc_probit": "LC probit: GLM binomial com ligação probit (Finney 1971). Equivalente ao LC probit do pacote R {ecotox} (Hlina et al. 2021) e modificado por Joseph S. Ribeiro",
     "lc_logit":  "LC logit: GLM binomial com ligação logit. Mais robusto nos extremos da curva. Equivalente ao LC logit do {ecotox} e modificado por Joseph S. Ribeiro",
-    "lt_probit": "LT probit: Mesmo algoritmo do LC probit com tempo de exposição como variável independente. Equivalente ao LT_probit do {ecotox} e modificado por Joseph S. Ribeiro.",
-    "lt_logit":  "LT logit: GLM logit com tempo de exposição. Equivalente ao LT_logit do {ecotox} e modificado por Joseph S. Ribeiro.",
+    "lt_probit": "LT probit: Mesmo algoritmo do LC probit com tempo de exposição como variável independente. Equivalente ao LT probit do {ecotox} e modificado por Joseph S. Ribeiro.",
+    "lt_logit":  "LT logit: GLM logit com tempo de exposição. Equivalente ao LT logit do {ecotox} e modificado por Joseph S. Ribeiro.",
     "spearman":  "Spearman-Kärber aparado (Wheeler et al. 2006). Variância por Thompson (1947). Correção de Abbott aplicada à mortalidade do controle e modificado por Joseph S. Ribeiro.",
 }
 
@@ -392,7 +392,7 @@ def fig_to_bytes(fig, fmt: str, dpi: int = 150) -> bytes:
 
 with st.sidebar:
     st.markdown("## ⚗ EcotoxLab")
-    st.caption("Análise de Toxicidade Aquática")  # Será #e3b341
+    st.caption("É a reunião dos principais modelos estátisticos de tóxicologia, contendo os Testes paramétricos de Concentração Letal (LC) e Tempo Letal (LT) Logit, Probit e Não-paramétrico ")  # Será #e3b341
     st.divider()
 
     st.markdown("### 🔬 Experimento")
