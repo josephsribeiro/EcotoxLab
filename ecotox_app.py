@@ -297,7 +297,7 @@ METHODS = {
 METHOD_NOTES = {
     "lc_probit": "LC probit: GLM binomial com ligação probit (Finney 1971). Equivalente ao LC probit do pacote R {ecotox} (Hlina et al. 2021) e modificado por Joseph S. Ribeiro",
     "lc_logit":  "LC logit: GLM binomial com ligação logit. Mais robusto nos extremos da curva. Equivalente ao LC logit do {ecotox} e modificado por Joseph S. Ribeiro",
-    "lt_probit": "LT probit: Mesmo algoritmo do LC probit com tempo de exposição como variável independente. Equivalente ao LT_probit do {ecotox e modificado por Joseph S. Ribeiro.",
+    "lt_probit": "LT probit: Mesmo algoritmo do LC probit com tempo de exposição como variável independente. Equivalente ao LT_probit do {ecotox} e modificado por Joseph S. Ribeiro.",
     "lt_logit":  "LT logit: GLM logit com tempo de exposição. Equivalente ao LT_logit do {ecotox} e modificado por Joseph S. Ribeiro.",
     "spearman":  "Spearman-Kärber aparado (Wheeler et al. 2006). Variância por Thompson (1947). Correção de Abbott aplicada à mortalidade do controle e modificado por Joseph S. Ribeiro.",
 }
@@ -351,7 +351,7 @@ def make_chart(res, obs_x, obs_y, x_label, cl_label, substance, method_id, link)
         )
 
     # Estética
-    ax.set_xlabel(x_label, color="#", fontsize=10)
+    ax.set_xlabel(x_label, color="#ffffff", fontsize=10)
     ax.set_ylabel("Mortalidade (%)", color="#ffffff", fontsize=10)
     ax.set_title(
         f"{substance}  —  {METHODS[method_id]['label']}",
