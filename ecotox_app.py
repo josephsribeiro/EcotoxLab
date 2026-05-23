@@ -55,6 +55,18 @@ st.markdown("""
   /* Quando o select/dropdown nativo tiver fundo branco (alguns browsers), força preto */
   section[data-testid="stSidebar"] select option { color:#000000 !important; background:#ffffff; }
 
+  /* Dropdown React do Streamlit — renderizado fora da sidebar no DOM */
+  [data-baseweb="select"] [role="option"],
+  [data-baseweb="menu"] [role="option"] {
+    color: #000000 !important;
+    background: #ffffff !important;
+  }
+  [data-baseweb="select"] [role="option"]:hover,
+  [data-baseweb="menu"] [role="option"]:hover {
+    background: #e8f0fe !important;
+    color: #000000 !important;
+  }
+
   .stButton>button {
     background:linear-gradient(135deg,#1a7f64,#2da677);
     color:#fff !important; border:none; border-radius:8px;
