@@ -175,6 +175,31 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+/* ── COR PRETA especificamente para as OPÇÕES dos selects de unidades ── */
+/* Para selects normais (não-React) na sidebar */
+section[data-testid="stSidebar"] select option {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+}
+
+/* Para os containers dos selects do Streamlit (React) */
+section[data-testid="stSidebar"] [data-baseweb="select"] [role="option"] {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+}
+
+/* Para quando o mouse passa por cima das opções */
+section[data-testid="stSidebar"] [data-baseweb="select"] [role="option"]:hover {
+    background-color: #e8f0fe !important;
+    color: #000000 !important;
+}
+
+/* Para o texto do select quando está fechado (o valor selecionado) */
+section[data-testid="stSidebar"] [data-baseweb="select"] div[aria-selected="true"] {
+    color: #000000 !important;
+}
+
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # MATEMÁTICA
