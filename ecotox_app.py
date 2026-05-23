@@ -27,7 +27,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-st.markdown("""
+´st.markdown("""
 <style>
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600&display=swap');
 
@@ -52,6 +52,7 @@ st.markdown("""
     background:#13191f !important;
     color:#ffffff !important;
   }
+  
   /* Quando o select/dropdown nativo tiver fundo branco (alguns browsers), força preto */
   section[data-testid="stSidebar"] select option { color:#000000 !important; background:#ffffff; }
 
@@ -67,137 +68,34 @@ st.markdown("""
     color: #000000 !important;
   }
 
-  .stButton>button {
-    background:linear-gradient(135deg,#1a7f64,#2da677);
-    color:#fff !important; border:none; border-radius:8px;
-    font-weight:600; width:100%; padding:10px 16px;
-    font-size:14px; letter-spacing:0.3px;
-    transition: all 0.2s ease;
-  }
-  .stButton>button:hover { filter:brightness(1.15); transform:translateY(-1px); }
-
-  /* Labels e textos da área principal em branco */
-  .stApp label, .stApp .stMarkdown p, .stApp .stCaption,
-  .stApp [data-testid="stWidgetLabel"] p,
-  div[data-testid="stNumberInputContainer"] label,
-  div[data-testid="stTextInputRootElement"] label,
-  div[class*="stNumberInput"] label,
-  div[class*="stTextInput"] label,
-  div[class*="stSelectbox"] label { color:#ffffff !important; }
-
-  .stTextInput input, .stNumberInput input, .stSelectbox select {
-    background:#13191f !important; border:1px solid #2d333b !important;
-    color:#cdd9e5 !important; border-radius:6px !important;
-    font-family:'JetBrains Mono',monospace !important;
-  }
-
-  div[data-testid="stMetric"] {
-    background:#13191f; border:1px solid #2d333b;
-    border-radius:10px; padding:14px 16px;
-  }
-  div[data-testid="stMetricValue"] { color:#539bf5 !important; font-size:1.3rem !important; }
-  div[data-testid="stMetricLabel"] { color:#ffffff !important; font-size:.72rem !important; }
-
-  .stTabs [data-baseweb="tab-list"] { background:#0d1117; border-bottom:1px solid #2d333b; }
-  .stTabs [data-baseweb="tab"] { color:#ffffff; }
-  .stTabs [aria-selected="true"] { color:#2da677 !important; border-bottom:2px solid #2da677 !important; }
-
-  hr { border-color:#2d333b; }
-
-  .warn-box {
-    background:#2d1217; border:1px solid #e5534b60; border-radius:8px;
-    padding:10px 14px; font-size:12px; color:#e5534b;
-  }
-  .ok-box {
-    background:#0d2b1f; border:1px solid #2da67760; border-radius:8px;
-    padding:10px 14px; font-size:12px; color:#2da677;
-  }
+  /* ... todo o resto do seu CSS existente ... */
+  
   .info-box {
     background:#0a0e14; border:1px solid #2d333b; border-radius:8px;
     padding:12px 16px; font-size:12px; line-height:1.65;
   }
-
-  /* ── Controle box ── */
-  .control-section {
-    background: #0f1621;
-    border: 1px solid #e3b341;
-    border-radius: 10px;
-    padding: 14px 18px;
-    margin-bottom: 18px;
-  }
-  .control-label {
-    font-size: 11px; font-weight: 700; color: #e3b341 !important;
-    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;
-  }
-  .control-badge {
-    display:inline-block; background:#e3b34122; color:#e3b341;
-    border:1px solid #e3b34155; border-radius:4px;
-    font-size:10px; padding:1px 7px; margin-left:8px; vertical-align:middle;
-  }
-
-  /* ── Doses section ── */
-  .doses-section {
-    background: #0d1117;
-    border: 1px solid #2d333b;
-    border-radius: 10px;
-    padding: 14px 18px;
-    margin-bottom: 18px;
-  }
-  .doses-label {
-    font-size: 11px; font-weight: 700; color: #539bf5 !important;
-    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;
-  }
-
-  /* ── Personalização do gráfico ── */
-  .chart-config {
-    background: #0d1117;
-    border: 1px solid #2d333b;
-    border-radius: 10px;
-    padding:16px;
-    margin-bottom:16px;
-  }
-
-  /* Disabled input visual */
-  .disabled-input {
-    background: #1a1f26;
-    border: 1px solid #2d333b;
-    border-radius: 6px;
-    padding: 8px 12px;
-    color: #e3b341;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .lock-icon { color: #e3b341; font-size: 11px; opacity: 0.7; }
-</style>
-""", unsafe_allow_html=True)
-
-/* ── COR PRETA especificamente para as OPÇÕES dos selects de unidades ── */
-/* Para selects normais (não-React) na sidebar */
-section[data-testid="stSidebar"] select option {
+  
+  /* NOVO CSS PARA COR PRETA NAS OPÇÕES DOS SELECTS DE UNIDADES */
+  section[data-testid="stSidebar"] select option {
     color: #000000 !important;
     background-color: #ffffff !important;
-}
+  }
 
-/* Para os containers dos selects do Streamlit (React) */
-section[data-testid="stSidebar"] [data-baseweb="select"] [role="option"] {
+  section[data-testid="stSidebar"] [data-baseweb="select"] [role="option"] {
     color: #000000 !important;
     background-color: #ffffff !important;
-}
+  }
 
-/* Para quando o mouse passa por cima das opções */
-section[data-testid="stSidebar"] [data-baseweb="select"] [role="option"]:hover {
+  section[data-testid="stSidebar"] [data-baseweb="select"] [role="option"]:hover {
     background-color: #e8f0fe !important;
     color: #000000 !important;
-}
+  }
 
-/* Para o texto do select quando está fechado (o valor selecionado) */
-section[data-testid="stSidebar"] [data-baseweb="select"] div[aria-selected="true"] {
+  section[data-testid="stSidebar"] [data-baseweb="select"] div[aria-selected="true"] {
     color: #000000 !important;
-}
+  }
+</style>
+""", unsafe_allow_html=True)
 
 
 
