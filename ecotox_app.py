@@ -27,7 +27,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-´st.markdown("""
+st.markdown("""
 <style>
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600&display=swap');
 
@@ -52,8 +52,7 @@ st.set_page_config(
     background:#13191f !important;
     color:#ffffff !important;
   }
-  
-  /* Quando o select/dropdown nativo tiver fundo branco (alguns browsers), força preto */
+  /* Dropdown nativo — força texto preto sobre fundo claro */
   section[data-testid="stSidebar"] select option { color:#000000 !important; background:#ffffff; }
 
   /* Dropdown React do Streamlit — renderizado fora da sidebar no DOM */
@@ -68,35 +67,121 @@ st.set_page_config(
     color: #000000 !important;
   }
 
-  /* ... todo o resto do seu CSS existente ... */
-  
+  /* Caixa de valor selecionada do selectbox (texto visível no campo) */
+  [data-baseweb="select"] [data-testid="stMarkdownContainer"] p,
+  [data-baseweb="select"] span,
+  section[data-testid="stSidebar"] [data-baseweb="select"] div,
+  section[data-testid="stSidebar"] [data-baseweb="select"] span,
+  section[data-testid="stSidebar"] [data-baseweb="select"] input {
+    color: #000000 !important;
+  }
+
+  .stButton>button {
+    background:linear-gradient(135deg,#1a7f64,#2da677);
+    color:#fff !important; border:none; border-radius:8px;
+    font-weight:600; width:100%; padding:10px 16px;
+    font-size:14px; letter-spacing:0.3px;
+    transition: all 0.2s ease;
+  }
+  .stButton>button:hover { filter:brightness(1.15); transform:translateY(-1px); }
+
+  /* Labels e textos da área principal em branco */
+  .stApp label, .stApp .stMarkdown p, .stApp .stCaption,
+  .stApp [data-testid="stWidgetLabel"] p,
+  div[data-testid="stNumberInputContainer"] label,
+  div[data-testid="stTextInputRootElement"] label,
+  div[class*="stNumberInput"] label,
+  div[class*="stTextInput"] label,
+  div[class*="stSelectbox"] label { color:#ffffff !important; }
+
+  .stTextInput input, .stNumberInput input, .stSelectbox select {
+    background:#13191f !important; border:1px solid #2d333b !important;
+    color:#cdd9e5 !important; border-radius:6px !important;
+    font-family:'JetBrains Mono',monospace !important;
+  }
+
+  div[data-testid="stMetric"] {
+    background:#13191f; border:1px solid #2d333b;
+    border-radius:10px; padding:14px 16px;
+  }
+  div[data-testid="stMetricValue"] { color:#539bf5 !important; font-size:1.3rem !important; }
+  div[data-testid="stMetricLabel"] { color:#ffffff !important; font-size:.72rem !important; }
+
+  .stTabs [data-baseweb="tab-list"] { background:#0d1117; border-bottom:1px solid #2d333b; }
+  .stTabs [data-baseweb="tab"] { color:#ffffff; }
+  .stTabs [aria-selected="true"] { color:#2da677 !important; border-bottom:2px solid #2da677 !important; }
+
+  hr { border-color:#2d333b; }
+
+  .warn-box {
+    background:#2d1217; border:1px solid #e5534b60; border-radius:8px;
+    padding:10px 14px; font-size:12px; color:#e5534b;
+  }
+  .ok-box {
+    background:#0d2b1f; border:1px solid #2da67760; border-radius:8px;
+    padding:10px 14px; font-size:12px; color:#2da677;
+  }
   .info-box {
     background:#0a0e14; border:1px solid #2d333b; border-radius:8px;
     padding:12px 16px; font-size:12px; line-height:1.65;
   }
-  
-  /* NOVO CSS PARA COR PRETA NAS OPÇÕES DOS SELECTS DE UNIDADES */
-  section[data-testid="stSidebar"] select option {
-    color: #000000 !important;
-    background-color: #ffffff !important;
+
+  /* ── Controle box ── */
+  .control-section {
+    background: #0f1621;
+    border: 1px solid #e3b341;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 18px;
+  }
+  .control-label {
+    font-size: 11px; font-weight: 700; color: #e3b341 !important;
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;
+  }
+  .control-badge {
+    display:inline-block; background:#e3b34122; color:#e3b341;
+    border:1px solid #e3b34155; border-radius:4px;
+    font-size:10px; padding:1px 7px; margin-left:8px; vertical-align:middle;
   }
 
-  section[data-testid="stSidebar"] [data-baseweb="select"] [role="option"] {
-    color: #000000 !important;
-    background-color: #ffffff !important;
+  /* ── Doses section ── */
+  .doses-section {
+    background: #0d1117;
+    border: 1px solid #2d333b;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 18px;
+  }
+  .doses-label {
+    font-size: 11px; font-weight: 700; color: #539bf5 !important;
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;
   }
 
-  section[data-testid="stSidebar"] [data-baseweb="select"] [role="option"]:hover {
-    background-color: #e8f0fe !important;
-    color: #000000 !important;
+  /* Disabled input visual */
+  .disabled-input {
+    background: #1a1f26;
+    border: 1px solid #2d333b;
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: #e3b341;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
+  .lock-icon { color: #e3b341; font-size: 11px; opacity: 0.7; }
 
-  section[data-testid="stSidebar"] [data-baseweb="select"] div[aria-selected="true"] {
-    color: #000000 !important;
-  }
+  /* ── Expander Personalizar Gráfico — título preto ── */
+  .streamlit-expanderHeader p,
+  .streamlit-expanderHeader span,
+  details summary p,
+  details > summary { color: #000000 !important; font-weight: 600; }
+  [data-testid="stExpander"] summary p { color: #000000 !important; }
+  [data-testid="stExpander"] summary { color: #000000 !important; }
 </style>
 """, unsafe_allow_html=True)
-
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -277,6 +362,7 @@ def predict_from_cl(x_arr, cl: float, link: str = "logit"):
 # ─────────────────────────────────────────────────────────────────────────────
 UNITS_CONC = ["µg/L", "µg/g", "µg/mg", "µg/kg", "mg/L", "mg/g", "mg/kg", "ng/L", "ng/g"]
 UNITS_TIME = ["h", "min", "dias", "semanas"]
+FONT_FAMILIES = ["DejaVu Sans", "DejaVu Serif", "Liberation Mono", "STIXGeneral", "serif", "monospace"]
 
 METHODS = {
     "lc_probit": dict(label="LC probit", group="LC", link="probit", is_lt=False, cl_label="CL50"),
@@ -296,24 +382,25 @@ METHOD_NOTES = {
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# GRÁFICO — estilo idêntico à imagem de referência
+# GRÁFICO
 # ─────────────────────────────────────────────────────────────────────────────
 
 def make_chart(
     res, obs_x, obs_y, x_label, y_label, cl_label,
     substance, method_id, link,
     title_main, subtitle,
-    bg_color,          # "dark" | "white"
-    curve_color,       # hex string
-    ci_lower_color,    # hex string
-    ci_upper_color,    # hex string
-    point_color,       # hex string
-    cl50_line_color,   # hex string
+    bg_color,
+    curve_color, ci_lower_color, ci_upper_color,
+    point_color, cl50_line_color,
     unit_r,
+    # visibilidade
+    show_curve, show_ci_lower, show_ci_upper,
+    show_points, show_pct_labels, show_cl50_line,
+    show_mort50_line, show_grid, show_param_box, show_legend,
+    # tipografia
+    font_family, font_size_title, font_size_axis, font_size_ticks, font_size_legend,
 ):
     IS_DARK = (bg_color == "dark")
-
-    # Paleta base
     BG      = "#0a0e14" if IS_DARK else "#ffffff"
     AX_BG   = "#0a0e14" if IS_DARK else "#ffffff"
     TEXT_C  = "#cdd9e5" if IS_DARK else "#1a1a1a"
@@ -324,13 +411,14 @@ def make_chart(
     LEG_LC  = "#cdd9e5" if IS_DARK else "#1a1a1a"
     PARAM_BG= "#13191f" if IS_DARK else "#f5f5f5"
     PARAM_EC= "#2d333b" if IS_DARK else "#cccccc"
-    MORT50_C= "#555555" if IS_DARK else "#aaaaaa"
+    MORT50_C= "#666666" if IS_DARK else "#aaaaaa"
+
+    plt.rcParams["font.family"] = font_family
 
     fig, ax = plt.subplots(figsize=(10, 6.5))
     fig.patch.set_facecolor(BG)
     ax.set_facecolor(AX_BG)
 
-    # ── Intervalo X linear (sem log) ──
     x_min = max(min(obs_x) * 0.55, 1e-5)
     x_max = max(obs_x) * 1.40
     xs    = np.linspace(x_min, x_max, 600)
@@ -339,126 +427,121 @@ def make_chart(
     y_lower = predict_from_cl(xs, res["lcl"], link or "logit")
     y_upper = predict_from_cl(xs, res["ucl"], link or "logit")
 
-    # ── Linhas IC (tracejadas) ──
-    ax.plot(xs, y_lower, color=ci_lower_color, lw=1.4, ls="--",
-            label="Limite inferior (IC 95%)", zorder=3)
-    ax.plot(xs, y_upper, color=ci_upper_color, lw=1.4, ls="--",
-            label="Limite superior (IC 95%)", zorder=3)
+    legend_handles = []
 
-    # ── Curva principal (sólida) ──
-    ax.plot(xs, y_curve, color=curve_color, lw=2.5, ls="-",
-            label=f"Curva ajustada", zorder=5)
-
-    # ── Linha 50% mortalidade ──
-    ax.axhline(50, color=MORT50_C, lw=0.9, ls=":", zorder=2,
-               label="Linha de 50% mortalidade")
-
-    # ── Linha vertical CL50 (traço-ponto vermelho) ──
-    ax.axvline(res["cl"], color=cl50_line_color, lw=1.3, ls="-.",
-               alpha=0.9, zorder=4, label=f"{cl_label} estimada")
-
-    # ── Pontos observados com erro estimado ──
-    n_pts = len(obs_x)
-    for i, (xi, yi) in enumerate(zip(obs_x, obs_y)):
-        p = yi / 100.0
-        # Erro padrão binomial simples (para barra de erro visual)
-        n_org = 30  # aproximação visual
-        se = np.sqrt(p * (1 - p) / n_org) * 100 if 0 < p < 1 else 0
-        ax.errorbar(xi, yi, yerr=se, fmt='o', color=point_color,
-                    markeredgecolor=TEXT_C if IS_DARK else "#ffffff",
-                    markeredgewidth=0.6, markersize=8,
-                    ecolor=point_color, capsize=3, capthick=1.2,
-                    zorder=7)
-        # Rótulo percentual
-        offset_y = 3.5 if yi < 90 else -6
-        ax.annotate(
-            f"{yi:.1f}%",
-            xy=(xi, yi), xytext=(0, offset_y),
-            textcoords="offset points",
-            ha="center", va="bottom" if offset_y > 0 else "top",
-            fontsize=8.5, color=TEXT_C,
-            fontweight="500",
+    # ── IC Inferior ──
+    if show_ci_lower:
+        ax.plot(xs, y_lower, color=ci_lower_color, lw=1.4, ls="--", zorder=3)
+        legend_handles.append(
+            Line2D([0],[0], color=ci_lower_color, lw=1.4, ls="--", label="Limite inferior (IC 95%)")
         )
 
-    # ── Anotação CL50 REMOVIDA (estava poluindo o gráfico) ──
-    # Os valores ficam na caixa de parâmetros (canto inferior direito)
+    # ── IC Superior ──
+    if show_ci_upper:
+        ax.plot(xs, y_upper, color=ci_upper_color, lw=1.4, ls="--", zorder=3)
+        legend_handles.append(
+            Line2D([0],[0], color=ci_upper_color, lw=1.4, ls="--", label="Limite superior (IC 95%)")
+        )
 
-    # ── Caixa de parâmetros (canto inferior direito) ──
-    slope_v    = res.get("slope") or "—"
-    intercept_v = res.get("intercept") or "—"
-    param_text = (
-        f"Parâmetros do modelo\n"
-        f"{'─'*24}\n"
-        f"CL50 (c)       = {res['cl']:.2f}\n"
-        f"Slope (b)      = {slope_v}\n"
-        f"Intercept (a)  = {intercept_v}\n"
-        f"{'─'*24}\n"
-        f"IC 95% da {cl_label}\n"
-        f"Limite inferior  = {res['lcl']:.2f}\n"
-        f"{cl_label} estimada  = {res['cl']:.2f}\n"
-        f"Limite superior  = {res['ucl']:.2f}"
-    )
-    ax.text(
-        0.98, 0.03, param_text,
-        transform=ax.transAxes,
-        fontsize=7.8, va="bottom", ha="right",
-        color=TEXT_C,
-        fontfamily="monospace",
-        bbox=dict(
-            boxstyle="round,pad=0.55",
-            facecolor=PARAM_BG,
-            edgecolor=PARAM_EC,
-            alpha=0.92,
-            linewidth=0.8,
-        ),
-        zorder=9,
-    )
+    # ── Curva principal ──
+    if show_curve:
+        ax.plot(xs, y_curve, color=curve_color, lw=2.5, ls="-", zorder=5)
+        legend_handles.append(
+            Line2D([0],[0], color=curve_color, lw=2.5, ls="-", label="Curva ajustada (GLM)")
+        )
+
+    # ── Linha 50% mortalidade ──
+    if show_mort50_line:
+        ax.axhline(50, color=MORT50_C, lw=0.9, ls=":", zorder=2)
+        legend_handles.append(
+            Line2D([0],[0], color=MORT50_C, lw=0.9, ls=":", label="Linha de 50% mortalidade")
+        )
+
+    # ── Linha vertical CL50 ──
+    if show_cl50_line:
+        ax.axvline(res["cl"], color=cl50_line_color, lw=1.3, ls="-.", alpha=0.9, zorder=4)
+        legend_handles.append(
+            Line2D([0],[0], color=cl50_line_color, lw=1.3, ls="-.", label=f"{cl_label} estimada")
+        )
+
+    # ── Pontos observados ──
+    if show_points:
+        for xi, yi in zip(obs_x, obs_y):
+            p  = yi / 100.0
+            n_org = 30
+            se = np.sqrt(p * (1 - p) / n_org) * 100 if 0 < p < 1 else 0
+            ax.errorbar(xi, yi, yerr=se, fmt='o', color=point_color,
+                        markeredgecolor=TEXT_C if IS_DARK else "#ffffff",
+                        markeredgewidth=0.6, markersize=8,
+                        ecolor=point_color, capsize=3, capthick=1.2, zorder=7)
+            if show_pct_labels:
+                offset_y = 3.5 if yi < 90 else -6
+                ax.annotate(
+                    f"{yi:.1f}%",
+                    xy=(xi, yi), xytext=(0, offset_y),
+                    textcoords="offset points",
+                    ha="center", va="bottom" if offset_y > 0 else "top",
+                    fontsize=font_size_ticks, color=TEXT_C, fontweight="500",
+                )
+        legend_handles.insert(0,
+            Line2D([0],[0], marker="o", color=point_color,
+                   markeredgecolor=TEXT_C if IS_DARK else "#ffffff",
+                   markeredgewidth=0.5, ls="none", markersize=7, label="Dados observados")
+        )
+
+    # ── Caixa de parâmetros ──
+    if show_param_box:
+        slope_v     = res.get("slope") or "—"
+        intercept_v = res.get("intercept") or "—"
+        param_text  = (
+            f"Parâmetros do modelo\n"
+            f"{'─'*24}\n"
+            f"CL50 (c)       = {res['cl']:.2f}\n"
+            f"Slope (b)      = {slope_v}\n"
+            f"Intercept (a)  = {intercept_v}\n"
+            f"{'─'*24}\n"
+            f"IC 95% da {cl_label}\n"
+            f"Limite inferior  = {res['lcl']:.2f}\n"
+            f"{cl_label} estimada  = {res['cl']:.2f}\n"
+            f"Limite superior  = {res['ucl']:.2f}"
+        )
+        ax.text(
+            0.98, 0.03, param_text,
+            transform=ax.transAxes,
+            fontsize=font_size_ticks, va="bottom", ha="right",
+            color=TEXT_C, fontfamily="monospace",
+            bbox=dict(boxstyle="round,pad=0.55", facecolor=PARAM_BG,
+                      edgecolor=PARAM_EC, alpha=0.92, linewidth=0.8),
+            zorder=9,
+        )
 
     # ── Título e subtítulo ──
-    fig.suptitle(
-        title_main,
-        fontsize=14, fontweight="bold", color=TEXT_C, y=0.98,
-    )
-    ax.set_title(
-        subtitle,
-        fontsize=9, fontstyle="italic", color=TEXT_C, pad=6,
-    )
+    fig.suptitle(title_main, fontsize=font_size_title, fontweight="bold", color=TEXT_C, y=0.98)
+    ax.set_title(subtitle, fontsize=font_size_axis - 1, fontstyle="italic", color=TEXT_C, pad=6)
 
     # ── Eixos ──
-    ax.set_xlabel(x_label, color=TEXT_C, fontsize=11, labelpad=8)
-    ax.set_ylabel(y_label, color=TEXT_C, fontsize=11, labelpad=8)
+    ax.set_xlabel(x_label, color=TEXT_C, fontsize=font_size_axis, labelpad=8)
+    ax.set_ylabel(y_label, color=TEXT_C, fontsize=font_size_axis, labelpad=8)
     ax.set_ylim(-5, 112)
     ax.set_xlim(left=0)
     ax.set_yticks(range(0, 111, 10))
-
-    # Eixo X em numeração direta (sem log)
     ax.xaxis.set_major_formatter(FuncFormatter(lambda val, _: f"{val:g}"))
-
-    ax.tick_params(colors=TEXT_C, labelsize=9, which="both")
+    ax.tick_params(colors=TEXT_C, labelsize=font_size_ticks, which="both")
     for sp in ax.spines.values():
         sp.set_color(SPINE_C)
         sp.set_linewidth(0.8)
 
-    ax.grid(True, color=GRID_C, lw=0.45, ls="--", alpha=0.55, zorder=0)
+    if show_grid:
+        ax.grid(True, color=GRID_C, lw=0.45, ls="--", alpha=0.55, zorder=0)
 
     # ── Legenda ──
-    handles = [
-        Line2D([0], [0], marker="o", color=point_color,
-               markeredgecolor=TEXT_C if IS_DARK else "#ffffff",
-               markeredgewidth=0.5, ls="none", markersize=7, label="Dados observados"),
-        Line2D([0], [0], color=curve_color,    lw=2.5, ls="-",  label="Curva ajustada (GLM)"),
-        Line2D([0], [0], color=ci_lower_color, lw=1.4, ls="--", label="Limite inferior (IC 95%)"),
-        Line2D([0], [0], color=ci_upper_color, lw=1.4, ls="--", label="Limite superior (IC 95%)"),
-        Line2D([0], [0], color=MORT50_C,       lw=0.9, ls=":",  label="Linha de 50% mortalidade"),
-        Line2D([0], [0], color=cl50_line_color,lw=1.3, ls="-.", label=f"{cl_label} estimada"),
-    ]
-    legend = ax.legend(
-        handles=handles,
-        facecolor=LEG_BG, edgecolor=LEG_EC,
-        labelcolor=LEG_LC, fontsize=8.5,
-        loc="upper left",
-        framealpha=0.92,
-    )
+    if show_legend and legend_handles:
+        ax.legend(
+            handles=legend_handles,
+            facecolor=LEG_BG, edgecolor=LEG_EC,
+            labelcolor=LEG_LC, fontsize=font_size_legend,
+            loc="upper left", framealpha=0.92,
+        )
 
     fig.tight_layout(rect=[0, 0, 1, 0.96])
     return fig
@@ -466,8 +549,7 @@ def make_chart(
 
 def fig_to_bytes(fig, fmt: str, dpi: int = 150, bg: str = "#0a0e14") -> bytes:
     buf = BytesIO()
-    fig.savefig(buf, format=fmt, dpi=dpi,
-                bbox_inches="tight", facecolor=bg)
+    fig.savefig(buf, format=fmt, dpi=dpi, bbox_inches="tight", facecolor=bg)
     buf.seek(0)
     return buf.getvalue()
 
@@ -545,7 +627,11 @@ with st.sidebar:
     unit     = unit_time if is_lt else unit_conc
     x_label  = f"Tempo ({unit})" if is_lt else f"Concentração ({unit})"
 
-    st.markdown(f"**Método ativo:** `{m['label']}`")
+    # Método ativo em verde
+    st.markdown(
+        f'**Método ativo:** <span style="color:#2da677;font-weight:700">{m["label"]}</span>',
+        unsafe_allow_html=True,
+    )
     st.markdown(
         f'<div class="info-box">{METHOD_NOTES[method_id]}</div>',
         unsafe_allow_html=True,
@@ -593,10 +679,7 @@ with tab_data:
         st.divider()
 
         st.markdown("#### Mortes por Intervalo de Tempo")
-        st.caption(
-            "Digite as mortes **em cada intervalo**. "
-            "A mortalidade acumulada é calculada automaticamente."
-        )
+        st.caption("Digite as mortes **em cada intervalo**. A mortalidade acumulada é calculada automaticamente.")
 
         hc = st.columns([0.5, 1.8, 2.2, 1.3, 1.3])
         for txt, col in zip(["#", f"Tempo ({unit})", "Mortos no intervalo", "Acumulado", "Mort. %"], hc):
@@ -678,7 +761,7 @@ with tab_data:
             help="Número de concentrações teste (não inclui o controle)",
         ))
 
-        # ── CONTROLE (separado, concentração fixa = 0) ──────────────────────
+        # ── CONTROLE ──
         st.markdown(
             '<div class="control-section">'
             '<p class="control-label">🔒 Controle (Concentração = 0,0000)'
@@ -709,7 +792,7 @@ with tab_data:
 
         st.divider()
 
-        # ── Cabeçalho doses ──────────────────────────────────────────────────
+        # ── Cabeçalho doses ──
         st.markdown(
             f'<div class="doses-section"><p class="doses-label">'
             f'📊 Concentrações Teste ({n_doses} doses)</p></div>',
@@ -752,11 +835,10 @@ with tab_data:
             deaths_all = [r["dead"] for r in lc_rows]
             probs_all  = [d / total for d in deaths_all]
 
-            ctrl_p   = ctrl_dead / total if total > 0 else 0.0
-            corr_p   = [abbott(p, ctrl_p) for p in probs_all]
-            corr_d   = [round(p * total) for p in corr_p]
+            ctrl_p = ctrl_dead / total if total > 0 else 0.0
+            corr_p = [abbott(p, ctrl_p) for p in probs_all]
+            corr_d = [round(p * total) for p in corr_p]
 
-            # Apenas doses > 0
             axs = [doses_all[i] for i in range(len(doses_all)) if doses_all[i] > 0]
             ade = [corr_d[i]    for i in range(len(doses_all)) if doses_all[i] > 0]
             ato = [total] * len(axs)
@@ -844,7 +926,9 @@ with tab_result:
         # ═══════════════════════════════════════════════════════════════
         st.divider()
         with st.expander("🎨 Personalizar Gráfico", expanded=True):
-            st.markdown("##### Textos")
+
+            # ── Textos ──────────────────────────────────────────────
+            st.markdown("##### ✏️ Textos")
             pcol1, pcol2 = st.columns(2)
             chart_title    = pcol1.text_input("Título principal",
                                                value=f"Curva Dose–Resposta ({cl_lbl})",
@@ -853,13 +937,30 @@ with tab_result:
                                                value=f"Modelo {m_r['label']}",
                                                key="chart_subtitle")
             pcol3, pcol4 = st.columns(2)
-            chart_xlabel   = pcol3.text_input("Rótulo Eixo X",
-                                               value=x_lbl_r, key="chart_xlabel")
-            chart_ylabel   = pcol4.text_input("Rótulo Eixo Y",
-                                               value="Mortalidade (%)", key="chart_ylabel")
+            chart_xlabel   = pcol3.text_input("Rótulo Eixo X", value=x_lbl_r, key="chart_xlabel")
+            chart_ylabel   = pcol4.text_input("Rótulo Eixo Y", value="Mortalidade (%)", key="chart_ylabel")
 
-            st.markdown("##### Aparência")
-            acol1, acol2 = st.columns(2)
+            st.divider()
+
+            # ── Visibilidade dos elementos ───────────────────────────
+            st.markdown("##### 👁️ Mostrar / Ocultar Elementos")
+            vc1, vc2, vc3 = st.columns(3)
+            show_curve       = vc1.checkbox("Curva ajustada",          value=True,  key="show_curve")
+            show_ci_lower    = vc1.checkbox("IC Inferior (tracejado)",  value=True,  key="show_ci_lower")
+            show_ci_upper    = vc1.checkbox("IC Superior (tracejado)",  value=True,  key="show_ci_upper")
+            show_points      = vc2.checkbox("Dados observados",         value=True,  key="show_points")
+            show_pct_labels  = vc2.checkbox("Rótulos % nos pontos",     value=True,  key="show_pct_labels")
+            show_cl50_line   = vc2.checkbox(f"Linha {cl_lbl} estimada", value=True,  key="show_cl50_line")
+            show_mort50_line = vc3.checkbox("Linha 50% mortalidade",    value=True,  key="show_mort50_line")
+            show_grid        = vc3.checkbox("Grade (grid)",             value=True,  key="show_grid")
+            show_param_box   = vc3.checkbox("Caixa de parâmetros",      value=True,  key="show_param_box")
+            show_legend      = vc3.checkbox("Legenda",                  value=True,  key="show_legend")
+
+            st.divider()
+
+            # ── Aparência e cores ────────────────────────────────────
+            st.markdown("##### 🎨 Aparência e Cores")
+            acol1, _ = st.columns([1, 2])
             bg_choice = acol1.radio(
                 "Fundo do gráfico",
                 options=["dark", "white"],
@@ -868,15 +969,25 @@ with tab_result:
                 key="bg_choice",
             )
 
-            st.markdown("##### Cores das Linhas")
             ccol1, ccol2, ccol3, ccol4, ccol5 = st.columns(5)
-            col_curve   = ccol1.color_picker("Curva",           "#1f77b4", key="col_curve")
-            col_ci_low  = ccol2.color_picker("IC Inferior",     "#1f77b4", key="col_ci_low")
-            col_ci_high = ccol3.color_picker("IC Superior",     "#d62728", key="col_ci_high")
-            col_points  = ccol4.color_picker("Pontos Obs.",     "#111111", key="col_points")
-            col_cl50    = ccol5.color_picker("Linha CL50",      "#d62728", key="col_cl50")
+            col_curve   = ccol1.color_picker("Curva",        "#1f77b4", key="col_curve")
+            col_ci_low  = ccol2.color_picker("IC Inferior",  "#1f77b4", key="col_ci_low")
+            col_ci_high = ccol3.color_picker("IC Superior",  "#d62728", key="col_ci_high")
+            col_points  = ccol4.color_picker("Pontos Obs.",  "#111111", key="col_points")
+            col_cl50    = ccol5.color_picker("Linha CL50",   "#d62728", key="col_cl50")
 
-        # ── Gerar gráfico com configurações ──
+            st.divider()
+
+            # ── Tipografia ───────────────────────────────────────────
+            st.markdown("##### 🔤 Tipografia")
+            fcol1, fcol2, fcol3, fcol4 = st.columns(4)
+            font_family     = fcol1.selectbox("Fonte", FONT_FAMILIES, index=0, key="font_family")
+            font_size_title = fcol2.number_input("Tam. Título",  min_value=8, max_value=24, value=14, step=1, key="font_size_title")
+            font_size_axis  = fcol3.number_input("Tam. Eixos",   min_value=7, max_value=18, value=11, step=1, key="font_size_axis")
+            font_size_ticks = fcol4.number_input("Tam. Ticks/%", min_value=6, max_value=14, value=9,  step=1, key="font_size_ticks")
+            font_size_legend = st.number_input("Tam. Legenda", min_value=6, max_value=14, value=9, step=1, key="font_size_legend")
+
+        # ── Gerar gráfico ──
         BG_HEX = "#0a0e14" if bg_choice == "dark" else "#ffffff"
 
         fig = make_chart(
@@ -892,6 +1003,21 @@ with tab_result:
             point_color=col_points,
             cl50_line_color=col_cl50,
             unit_r=unit_r,
+            show_curve=show_curve,
+            show_ci_lower=show_ci_lower,
+            show_ci_upper=show_ci_upper,
+            show_points=show_points,
+            show_pct_labels=show_pct_labels,
+            show_cl50_line=show_cl50_line,
+            show_mort50_line=show_mort50_line,
+            show_grid=show_grid,
+            show_param_box=show_param_box,
+            show_legend=show_legend,
+            font_family=font_family,
+            font_size_title=int(font_size_title),
+            font_size_axis=int(font_size_axis),
+            font_size_ticks=int(font_size_ticks),
+            font_size_legend=int(font_size_legend),
         )
 
         st.pyplot(fig, use_container_width=True)
@@ -920,18 +1046,18 @@ with tab_result:
         )
 
         result_rows = [
-            (cl_lbl,              f"{res['cl']:.4f}",          unit_r),
-            ("Lim. Inferior 95%", f"{res['lcl']:.4f}",         unit_r),
-            ("Lim. Superior 95%", f"{res['ucl']:.4f}",         unit_r),
-            ("log10(CL)",         f"{res['log_cl']:.4f}",      ""),
-            ("Slope (b₁)",        str(res.get("slope", "—")),  ""),
+            (cl_lbl,              f"{res['cl']:.4f}",           unit_r),
+            ("Lim. Inferior 95%", f"{res['lcl']:.4f}",          unit_r),
+            ("Lim. Superior 95%", f"{res['ucl']:.4f}",          unit_r),
+            ("log10(CL)",         f"{res['log_cl']:.4f}",       ""),
+            ("Slope (b₁)",        str(res.get("slope",   "—")), ""),
             ("Intercept (b₀)",    str(res.get("intercept","—")),""),
-            ("z-value",           str(res.get("z_value", "—")),""),
+            ("z-value",           str(res.get("z_value", "—")), ""),
             ("Var(log CL)",       str(res.get("variance","—")), ""),
-            ("χ² Pearson",        str(res.get("chi2","—")),     ""),
-            ("p GOF",             pgof_str,                     ""),
-            ("Método",            m_r["label"],                 ""),
-            ("Substância",        subst,                        ""),
+            ("χ² Pearson",        str(res.get("chi2",    "—")), ""),
+            ("p GOF",             pgof_str,                      ""),
+            ("Método",            m_r["label"],                  ""),
+            ("Substância",        subst,                         ""),
         ]
         csv_bytes = (
             pd.DataFrame(result_rows, columns=["Parâmetro", "Valor", "Unidade"])
