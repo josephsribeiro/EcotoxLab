@@ -33,12 +33,27 @@ st.markdown("""
 
   .stApp { background:#0a0e14; color:#cdd9e5; font-family:'Inter',sans-serif; }
   section[data-testid="stSidebar"] { background:#0d1117; border-right:1px solid #2d333b; }
-  section[data-testid="stSidebar"] * { color:#e3b341 !important; }
-  section[data-testid="stSidebar"] h1,
-  section[data-testid="stSidebar"] h2,
-  section[data-testid="stSidebar"] h3 { color:#cdd9e5 !important; }
+
+  /* Todos os textos da sidebar em branco por padrão */
+  section[data-testid="stSidebar"] * { color:#ffffff !important; }
+  section[data-testid="stSidebar"] p,
+  section[data-testid="stSidebar"] label,
+  section[data-testid="stSidebar"] span,
+  section[data-testid="stSidebar"] .stMarkdown,
+  section[data-testid="stSidebar"] .stCaption,
+  section[data-testid="stSidebar"] small { color:#ffffff !important; }
   section[data-testid="stSidebar"] strong { color:#ffffff !important; font-weight:700 !important; }
   section[data-testid="stSidebar"] code { color:#ffffff !important; background:#1a1f26 !important; }
+
+  /* Inputs e selects na sidebar: fundo escuro, texto branco */
+  section[data-testid="stSidebar"] input,
+  section[data-testid="stSidebar"] select,
+  section[data-testid="stSidebar"] textarea {
+    background:#13191f !important;
+    color:#ffffff !important;
+  }
+  /* Quando o select/dropdown nativo tiver fundo branco (alguns browsers), força preto */
+  section[data-testid="stSidebar"] select option { color:#000000 !important; background:#ffffff; }
 
   .stButton>button {
     background:linear-gradient(135deg,#1a7f64,#2da677);
@@ -48,6 +63,15 @@ st.markdown("""
     transition: all 0.2s ease;
   }
   .stButton>button:hover { filter:brightness(1.15); transform:translateY(-1px); }
+
+  /* Labels e textos da área principal em branco */
+  .stApp label, .stApp .stMarkdown p, .stApp .stCaption,
+  .stApp [data-testid="stWidgetLabel"] p,
+  div[data-testid="stNumberInputContainer"] label,
+  div[data-testid="stTextInputRootElement"] label,
+  div[class*="stNumberInput"] label,
+  div[class*="stTextInput"] label,
+  div[class*="stSelectbox"] label { color:#ffffff !important; }
 
   .stTextInput input, .stNumberInput input, .stSelectbox select {
     background:#13191f !important; border:1px solid #2d333b !important;
@@ -382,9 +406,9 @@ def make_chart(
 
     # ── Linhas IC (tracejadas) ──
     ax.plot(xs, y_lower, color=ci_lower_color, lw=1.4, ls="--",
-            label=f"Limite inferior (IC 95%)", zorder=3)
+            label="Limite inferior (IC 95%)", zorder=3)
     ax.plot(xs, y_upper, color=ci_upper_color, lw=1.4, ls="--",
-            label=f"Limite superior (IC 95%)", zorder=3)
+            label="Limite superior (IC 95%)", zorder=3)
 
     # ── Curva principal (sólida) ──
     ax.plot(xs, y_curve, color=curve_color, lw=2.5, ls="-",
@@ -421,16 +445,8 @@ def make_chart(
             fontweight="500",
         )
 
-    # ── Anotação CL50 no gráfico ──
-    cl_y_pos = 50
-    ax.annotate(
-        f"{cl_label} = {res['cl']:.2f} {unit_r}\nIC 95%: {res['lcl']:.2f} – {res['ucl']:.2f} {unit_r}",
-        xy=(res["cl"], cl_y_pos),
-        xytext=(res["cl"] * 1.08, cl_y_pos + 9),
-        fontsize=9, color=cl50_line_color, fontweight="600",
-        arrowprops=dict(arrowstyle="->", color=cl50_line_color, lw=1.0),
-        zorder=8,
-    )
+    # ── Anotação CL50 REMOVIDA (estava poluindo o gráfico) ──
+    # Os valores ficam na caixa de parâmetros (canto inferior direito)
 
     # ── Caixa de parâmetros (canto inferior direito) ──
     slope_v    = res.get("slope") or "—"
@@ -495,7 +511,7 @@ def make_chart(
         Line2D([0], [0], marker="o", color=point_color,
                markeredgecolor=TEXT_C if IS_DARK else "#ffffff",
                markeredgewidth=0.5, ls="none", markersize=7, label="Dados observados"),
-        Line2D([0], [0], color=curve_color,    lw=2.5, ls="-",  label="Curva ajustada"),
+        Line2D([0], [0], color=curve_color,    lw=2.5, ls="-",  label="Curva ajustada (GLM)"),
         Line2D([0], [0], color=ci_lower_color, lw=1.4, ls="--", label="Limite inferior (IC 95%)"),
         Line2D([0], [0], color=ci_upper_color, lw=1.4, ls="--", label="Limite superior (IC 95%)"),
         Line2D([0], [0], color=MORT50_C,       lw=0.9, ls=":",  label="Linha de 50% mortalidade"),
