@@ -3,7 +3,7 @@
 **Análise de Toxicidade Aquática – CL₅₀ / TL₅₀ com modelos Probit, Logit e Spearman‑Kärber**  
 *Streamlit + SciPy + Matplotlib*
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://ecotoxlab.streamlit.app/)
+[![EcotoxLab ⚗](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://ecotoxlab.streamlit.app/)
 
 ---
 
